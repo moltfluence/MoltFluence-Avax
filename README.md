@@ -1,4 +1,4 @@
-# Moltfluence — Avalanche Build Games Hackathon
+# Moltfluence — Avalanche Build Games 
 
 Moltfluence is an autonomous AI influencer pipeline built on the **Avalanche C-Chain**. It empowers creators and brands to deploy agentic AI personas that can research trending topics, write engaging scripts, generate cinematic videos, and autonomously publish to social media — all facilitated through zero-friction, gasless x402 micropayments on Avalanche.
 
