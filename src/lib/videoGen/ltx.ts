@@ -1,11 +1,23 @@
 import type { VideoGenAdapter, VideoGenRequest, VideoGenStatus } from "./types";
 
+// ---------------------------------------------------------------------------
+// DEMO_MODE: skip all video API calls to save PiAPI/LTX credits
+// Set DEMO_MODE=true in .env to enable
+// ---------------------------------------------------------------------------
+const DEMO_MODE = process.env.DEMO_MODE === "true";
+
+// Public domain MP4 used as a realistic demo placeholder
+const DEMO_VIDEO_URL =
+  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4";
+
 const LTX_BASE = "https://api.ltx.video/v1";
 
 export const ltxAdapter: VideoGenAdapter = {
   model: "ltx",
 
   async generateVideo(request: VideoGenRequest, apiKey: string): Promise<string> {
+    // DEMO_MODE video bypass removed so you get real video generation.
+    // The Web3 bypass is still active on the server route to save AVAX gas.
     const duration = normalizeLtxDuration(request.duration);
     const isImageToVideo = Boolean(request.imageUrl);
     const endpoint = isImageToVideo ? "/image-to-video" : "/text-to-video";

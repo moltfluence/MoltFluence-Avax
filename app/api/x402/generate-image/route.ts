@@ -5,10 +5,10 @@
 
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { getX402Config } from "@/lib/monadfluence/x402-config";
+import { getX402Config } from "@/lib/moltfluence/x402-config";
 import { getTreasuryWallet } from "@/lib/video-pricing";
-import { runLog } from "@/lib/monadfluence/run-log";
-import { resolveUserKey } from "@/lib/monadfluence/request-identity";
+import { runLog } from "@/lib/moltfluence/run-log";
+import { resolveUserKey } from "@/lib/moltfluence/request-identity";
 import { getImageAdapter, supportedImageModels } from "@/lib/imageGen";
 import { IMAGE_PRICING, getImageCostNumeric, getImageProviderCostNumeric } from "@/lib/image-pricing";
 import {
@@ -38,7 +38,11 @@ export async function POST(req: Request): Promise<NextResponse> {
       return NextResponse.json({ error: "Treasury wallet not configured" }, { status: 500 });
     }
 
+    const DEMO_MODE = process.env.DEMO_MODE === "true";
+
     const apiKey = process.env.PIAPI_KEY || process.env.HAILUO_API_KEY;
+    // Removed !DEMO_MODE check here. We now require the API key even in DEMO_MODE
+    // so we can actually trigger the real image generation.
     if (!apiKey) {
       return NextResponse.json({ error: "Image generation API key not configured" }, { status: 500 });
     }
@@ -51,42 +55,46 @@ export async function POST(req: Request): Promise<NextResponse> {
     const url = new URL(req.url);
     const resource = `${url.origin}${url.pathname}`;
 
-    if (!payment) {
-      return x402PaymentRequired({
-        priceUsd: costUsd,
-        recipient: treasury,
+    // DEMO_MODE: Bypass all payment requirements. Do not return 402, do not prompt MetaMask.
+    if (!DEMO_MODE) {
+      if (!payment) {
+        return x402PaymentRequired({
+          priceUsd: costUsd,
+          recipient: treasury,
+          description: `AI image generation: ${payload.model}`,
+          resourceUrl: resource,
+        });
+      }
+
+      const verification = await verifyPaymentHeader({
+        payment,
+        expectedRecipient: treasury,
+        resource,
+        maxAmountRequired: String(costMicroUsdc),
         description: `AI image generation: ${payload.model}`,
-        resourceUrl: resource,
+      });
+
+      if (!verification.valid) {
+        return NextResponse.json(
+          {
+            error: "Payment verification failed",
+            detail: verification.reason ?? "unknown",
+            requiredUsd: costUsd,
+          },
+          { status: 402 },
+        );
+      }
+
+      paymentAuditLog({
+        action: "generate-image",
+        payment,
+        verification,
+        userKey,
+        resource,
       });
     }
 
-    const verification = await verifyPaymentHeader({
-      payment,
-      expectedRecipient: treasury,
-      resource,
-      maxAmountRequired: String(costMicroUsdc),
-      description: `AI image generation: ${payload.model}`,
-    });
-
-    if (!verification.valid) {
-      return NextResponse.json(
-        {
-          error: "Payment verification failed",
-          detail: verification.reason ?? "unknown",
-          requiredUsd: costUsd,
-        },
-        { status: 402 },
-      );
-    }
-
-    paymentAuditLog({
-      action: "generate-image",
-      payment,
-      verification,
-      userKey,
-      resource,
-    });
-
+    // Always generate real images via PiAPI (even in DEMO_MODE)
     const adapter = getImageAdapter(payload.model);
     const jobId = await adapter.generateImage(
       {

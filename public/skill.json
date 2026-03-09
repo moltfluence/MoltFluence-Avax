@@ -1,29 +1,29 @@
 {
-  "name": "monadfluence",
+  "name": "moltfluence",
   "version": "2.0.0",
-  "description": "Autonomous AI Influencer Pipeline on Monad",
-  "homepage": "https://monadfluence.vercel.app",
-  "entrypoint": "https://monadfluence.vercel.app/skill.md",
+  "description": "Autonomous AI Influencer Pipeline on Avalanche",
+  "homepage": "https://moltfluence.vercel.app",
+  "entrypoint": "https://moltfluence.vercel.app/skill.md",
   "skills": [
     {
-      "name": "monadfluence-character",
-      "url": "https://monadfluence.vercel.app/api/skills/monadfluence-character"
+      "name": "moltfluence-character",
+      "url": "https://moltfluence.vercel.app/api/skills/moltfluence-character"
     },
     {
-      "name": "monadfluence-content-research",
-      "url": "https://monadfluence.vercel.app/api/skills/monadfluence-content-research"
+      "name": "moltfluence-content-research",
+      "url": "https://moltfluence.vercel.app/api/skills/moltfluence-content-research"
     },
     {
-      "name": "monadfluence-script-writer",
-      "url": "https://monadfluence.vercel.app/api/skills/monadfluence-script-writer"
+      "name": "moltfluence-script-writer",
+      "url": "https://moltfluence.vercel.app/api/skills/moltfluence-script-writer"
     },
     {
-      "name": "monadfluence-prompt-compiler",
-      "url": "https://monadfluence.vercel.app/api/skills/monadfluence-prompt-compiler"
+      "name": "moltfluence-prompt-compiler",
+      "url": "https://moltfluence.vercel.app/api/skills/moltfluence-prompt-compiler"
     },
     {
-      "name": "monadfluence-content-publish",
-      "url": "https://monadfluence.vercel.app/api/skills/monadfluence-content-publish"
+      "name": "moltfluence-content-publish",
+      "url": "https://moltfluence.vercel.app/api/skills/moltfluence-content-publish"
     }
   ],
   "apis": {

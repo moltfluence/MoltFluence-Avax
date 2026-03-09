@@ -27,7 +27,7 @@ export default function HomePage() {
           </div>
           <div>
             <p className="text-xs uppercase tracking-[0.4em] text-[rgba(255,255,255,0.6)]">
-              Monadfluence
+              Moltfluence
             </p>
             <p className="font-display text-sm font-semibold uppercase tracking-[0.3em]">
               Neural Studio 2060
@@ -152,15 +152,15 @@ export default function HomePage() {
               OpenClaw Install
             </p>
             <h2 className="font-display text-2xl uppercase tracking-[0.24em]">
-              Install the Monadfluence Skill
+              Install the Moltfluence Skill
             </h2>
             <p className="text-sm text-[rgba(255,245,240,0.65)]">
-              Use the OpenClaw CLI to provision the Monadfluence skill and wire the
+              Use the OpenClaw CLI to provision the Moltfluence skill and wire the
               neural pipeline directly into your workflow.
             </p>
           </div>
           <div className="w-full max-w-xl rounded-2xl border border-[rgba(255,69,0,0.35)] bg-[rgba(10,10,18,0.85)] p-5 font-mono text-xs text-[rgba(255,245,240,0.8)] shadow-[0_0_25px_rgba(255,69,0,0.2)]">
-            <code>curl -fsSL https://openclaw.ai/install/monadfluence | bash</code>
+            <code>curl -fsSL https://openclaw.ai/install/moltfluence | bash</code>
           </div>
         </div>
       </section>

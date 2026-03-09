@@ -1,31 +1,57 @@
-# Moltfluence BNB
+# Moltfluence — Avalanche Build Games Hackathon
 
-Autonomous AI influencer pipeline on BNB Chain. Agents create characters, generate videos, and publish to Instagram — paying per-use with USDT via x402 micropayments.
+Autonomous AI influencer pipeline on the **Avalanche C-Chain**. Agents create characters, research trending topics, generate videos, and publish to Instagram — paying per-use with USDC via x402 micropayments on Avalanche Fuji Testnet.
 
 ## How It Works
 
-1. **Character setup** — 60-second interview creates an AI persona with generated portrait
-2. **Agent swarm** — harvests trends, writes scripts, compiles model-ready prompts
-3. **Video generation** — Hailuo, Kling, Hunyuan, SkyReels, Wan 2.6 (pay-per-call via x402)
-4. **Instagram publish** — automated reel posting with character-matched captions
+1. **Character setup** — 60-second interview creates an AI persona with a generated portrait
+2. **Agent swarm** — harvests trends (Reddit, HN, CoinGecko), writes scripts, compiles model-ready prompts
+3. **Avalanche x402 payment** — user signs an ERC-3009 gasless USDC transfer on Avalanche Fuji (eip155:43113) before the pipeline runs
+4. **Video generation** — LTX-2 video model (pay-per-call via x402, bypassed in DEMO_MODE)
+5. **Instagram publish** — automated Reel posting with character-matched captions
 
 ## Tech Stack
 
 - **App:** Next.js 14, React 18, Tailwind v4
-- **Chain:** BSC Mainnet (`eip155:56`)
-- **Payments:** x402 v2, USDT via Permit2, self-hosted facilitator
-- **Video/Image:** PiAPI (Hailuo v2.3, Kling v2.6, Flux, Midjourney)
+- **Chain:** Avalanche Fuji C-Chain Testnet (`eip155:43113`)
+- **Payments:** x402 v2, native Circle USDC (`0x5425890298aed601595a70AB815c96711a31Bc65`) via ERC-3009, self-hosted facilitator
+- **AI:** Groq / Llama-3.3-70b (scripts), LTX-2 (video)
+- **Agent Identity:** ERC-8004 schema (mocked on Avalanche Fuji — registry pending deployment)
 - **Distribution:** Instagram Graph API v21.0
 
 ## Quick Start
 
 ```bash
 npm install
-cp .env.example .env   # fill in TREASURY_WALLET, FACILITATOR_PRIVATE_KEY, API keys
+cp .env.example .env   # DEMO_MODE=true is the default — safe to run immediately
 npm run dev
 ```
 
-Verify: `curl http://localhost:3000/api/x402/info | jq .`
+Verify payment layer: `curl http://localhost:3000/api/x402/info | jq .`
+
+## DEMO_MODE
+
+`DEMO_MODE=true` (default in `.env`) enables a full end-to-end walkthrough without spending API credits or AVAX gas:
+
+| Component | Live Mode | DEMO_MODE |
+|-----------|-----------|-----------|
+| MetaMask prompt | Real ERC-3009 signature | Real ERC-3009 signature |
+| On-chain settlement | Broadcasts to Avalanche Fuji | Skipped (returns mock tx hash) |
+| Groq script generation | Real Llama-3 API call | Pre-baked Avalanche scripts |
+| LTX-2 video generation | Real API call | Returns sample MP4 URL |
+| ERC-8004 registration | On-chain contract call | Mock agentId=8004 |
+
+## On-chain (Avalanche Fuji Testnet)
+
+- **Native USDC:** [`0x5425890298aed601595a70AB815c96711a31Bc65`](https://testnet.snowtrace.io/token/0x5425890298aed601595a70AB815c96711a31Bc65) (6 decimals)
+- **Transfer method:** ERC-3009 (`transferWithAuthorization`) — gasless for the user
+- **Chain ID:** 43113 (CAIP-2: `eip155:43113`)
+- **Explorer:** https://testnet.snowtrace.io
+- **Faucet:** https://core.app/tools/testnet-faucet/
+
+## Agent Integration (Nullclaw / Openclaw)
+
+Agents discover the API via [`/skill.md`](/public/skill.md). All paid endpoints follow the x402 protocol — call without payment header, get 402 challenge, sign USDC transfer on Avalanche, retry with payment header.
 
 ## Documentation
 
@@ -34,19 +60,13 @@ Verify: `curl http://localhost:3000/api/x402/info | jq .`
 | [docs/PROJECT.md](docs/PROJECT.md) | Problem, solution, ecosystem impact, roadmap |
 | [docs/TECHNICAL.md](docs/TECHNICAL.md) | Architecture, setup, demo guide |
 | [docs/EXTRAS.md](docs/EXTRAS.md) | Demo video and presentation links |
-| [bsc.address](bsc.address) | Contract addresses and explorer links |
 
-## On-chain
+## Architecture
 
-- **USDT:** [`0x55d398326f99059fF775485246999027B3197955`](https://bscscan.com/address/0x55d398326f99059fF775485246999027B3197955) (BSC, 18 decimals)
-- **Permit2:** [`0x000000000022D473030F116dDEE9F6B43aC78BA3`](https://bscscan.com/address/0x000000000022D473030F116dDEE9F6B43aC78BA3) (canonical)
-- **Transfer method:** Permit2 (`permitWitnessTransferFrom`)
-- **No custom contracts** — uses native BSC USDT directly
-
-## Agent Integration
-
-Agents discover the API via [`/skill.md`](https://monadfluence-bnb.vercel.app/skill.md). All paid endpoints follow the x402 protocol — call without payment, get 402 challenge, sign, retry with payment header.
-
-## Live
-
-https://monadfluence-bnb.vercel.app
+```
+User → MetaMask (ERC-3009 USDC sign on Avalanche Fuji)
+  → Next.js x402 middleware (verify signature)
+  → Agent swarm (Groq/Llama-3 for trends + scripts)
+  → LTX-2 video generation
+  → Instagram Graph API (Reel publish)
+```

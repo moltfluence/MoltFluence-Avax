@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 
+// DEMO_MODE: skip verification call when bypassing on-chain settlement
+const DEMO_MODE = process.env.DEMO_MODE === "true";
+
 const FACILITATOR_URL =
-  process.env.X402_FACILITATOR_URL?.trim() || "https://x402-facilitator.molandak.org";
+  process.env.X402_FACILITATOR_URL?.trim() || "https://x402.org/facilitator";
 
 export async function POST(req: NextRequest) {
   try {
@@ -13,6 +16,12 @@ export async function POST(req: NextRequest) {
         { error: "Missing paymentPayload or paymentRequirements" },
         { status: 400 },
       );
+    }
+
+    // DEMO_MODE: signature was already collected from MetaMask; skip network verify
+    if (DEMO_MODE) {
+      console.log("[facilitator/verify] DEMO_MODE — returning mock valid verification");
+      return NextResponse.json({ isValid: true, mocked: true, network: "eip155:43113" });
     }
 
     const res = await fetch(`${FACILITATOR_URL.replace(/\/+$/, "")}/verify`, {

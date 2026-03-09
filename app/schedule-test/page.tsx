@@ -20,7 +20,7 @@ type ScheduledPost = {
 export default function ScheduleTestPage() {
   const [videoUrl, setVideoUrl] = useState("https://storage.theapi.app/videos/303466910530022.mp4");
   const [caption, setCaption] = useState("Test post from Moltfluence scheduling system");
-  const [hashtags, setHashtags] = useState("monadfluence,ai,test");
+  const [hashtags, setHashtags] = useState("moltfluence,ai,test");
   const [scheduledFor, setScheduledFor] = useState("");
   const [loading, setLoading] = useState<string | null>(null);
   const [posts, setPosts] = useState<ScheduledPost[]>([]);

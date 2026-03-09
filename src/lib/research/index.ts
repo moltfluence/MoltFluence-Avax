@@ -13,7 +13,7 @@ import {
   getTavilyQueriesForNiche,
 } from "./niche-config";
 import { synthesizeTopics } from "../llm";
-import { saveResearchCache } from "../monadfluence/state";
+import { saveResearchCache } from "../moltfluence/state";
 import type {
   ResearchItem,
   CollectorResult,

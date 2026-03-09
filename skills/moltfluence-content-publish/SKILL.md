@@ -1,5 +1,5 @@
 ---
-name: monadfluence-content-publish
+name: moltfluence-content-publish
 description: Use when a user wants to generate and publish content. Run trends to scripts to prompts to video generation to QA to Instagram publishing using x402 paid endpoints.
 homepage: https://modfluencemonad.vercel.app
 compatibility: Requires an x402-capable runtime for paid endpoints. For custom Node bots, use Node 18+ (Node 20 recommended).
@@ -15,7 +15,7 @@ Run the full bot flow from topic selection to published reel URL.
 
 ## Runtime Contract
 - Startup rule: Never block at skill start for missing env vars. Start workflow and only request keys at a payment step.
-- Default API base is `https://modfluencemonad.vercel.app` when `MONADFLUENCE_API_URL` is not set.
+- Default API base is `https://modfluencemonad.vercel.app` when `MOLTFLUENCE_API_URL` is not set.
 - `EVM_PRIVATE_KEY` is required only when a call returns `402` and payment is needed.
 - Bot wallet is externally provisioned and funded. Do not create wallets in this skill.
 - Use one stable identity header for all calls: `x-user-id: <channel_user_id>`.
@@ -24,14 +24,14 @@ Run the full bot flow from topic selection to published reel URL.
 Use:
 
 ```bash
-API_BASE="${MONADFLUENCE_API_URL:-https://modfluencemonad.vercel.app}"
+API_BASE="${MOLTFLUENCE_API_URL:-https://modfluencemonad.vercel.app}"
 ```
 
 ---
 
-## Payment — x402 on Monad Testnet (IMPORTANT)
+## Payment — x402 on Avalanche Fuji Testnet (IMPORTANT)
 
-All paid endpoints (`/api/x402/*`) use x402 micropayments with USDC on Monad testnet (`eip155:10143`).
+All paid endpoints (`/api/x402/*`) use x402 micropayments with USDC on Avalanche testnet (`eip155:43113`).
 
 ### How it works (step by step)
 
@@ -64,7 +64,7 @@ import { ExactEvmScheme } from "@x402/evm";
 import { privateKeyToAccount } from "viem/accounts";
 import { fetch as undiciFetch } from "undici";
 
-const API_BASE = process.env.MONADFLUENCE_API_URL || "https://modfluencemonad.vercel.app";
+const API_BASE = process.env.MOLTFLUENCE_API_URL || "https://modfluencemonad.vercel.app";
 const USER_ID = "<channel_user_id>";
 
 const payer = privateKeyToAccount(process.env.EVM_PRIVATE_KEY as `0x${string}`);
@@ -164,7 +164,7 @@ Just use that platform's x402 payment tool to handle the 402 challenge. You don'
 
 ### Error handling
 - If `EVM_PRIVATE_KEY` is missing when `402` occurs, ask for wallet configuration and stop at that step.
-- If `insufficient funds`, tell user to fund wallet with USDC on Monad testnet.
+- If `insufficient funds`, tell user to fund wallet with USDC on Avalanche testnet.
 - If `payFetch` throws after retries, wait 30 seconds and try again. Do not give up.
 - Check `GET ${API_BASE}/api/x402/info` for current network and facilitator details.
 
@@ -182,7 +182,7 @@ const character = await charRes.json();
 // character = { id: "char_...", niche: "Crypto", ... }
 ```
 
-If no character exists, tell user to run `monadfluence-character` first.
+If no character exists, tell user to run `moltfluence-character` first.
 
 ### Step 2: Ask user
 - `auto trends` OR `manual topic`
@@ -191,7 +191,7 @@ If no character exists, tell user to run `monadfluence-character` first.
 
 The trends endpoint now returns rich `SynthesizedTopic` objects from real-time research (Reddit, HackerNews, CoinGecko, Tavily), not just topic strings. Topics include engagement scores, controversy ratings, hooks, and visual concepts.
 
-For detailed research behavior, see the `monadfluence-content-research` skill.
+For detailed research behavior, see the `moltfluence-content-research` skill.
 
 ```ts
 const trendsRes = await fetch(`${API_BASE}/api/swarm/trends`, {
@@ -224,7 +224,7 @@ const scripts = await scriptsRes.json();
 
 ### Step 5: Let user pick one script
 
-### Step 6: Compile prompts using `monadfluence-prompt-compiler` (free)
+### Step 6: Compile prompts using `moltfluence-prompt-compiler` (free)
 
 ```ts
 const compileRes = await fetch(`${API_BASE}/api/swarm/prompt-compile`, {
@@ -295,7 +295,7 @@ Video generation takes 1-3 minutes. Poll every 5-8 seconds.
 Retention rule:
 - Treat provider URLs as temporary.
 - Check `vidStatus.persisted` and `vidStatus.retention`.
-- Configure `MONADFLUENCE_ASSET_PERSIST_ENDPOINT` or `BLOB_READ_WRITE_TOKEN` on server so completed assets are copied to durable storage automatically.
+- Configure `MOLTFLUENCE_ASSET_PERSIST_ENDPOINT` or `BLOB_READ_WRITE_TOKEN` on server so completed assets are copied to durable storage automatically.
 
 ### Step 9: Confirm publish with user
 
@@ -308,7 +308,7 @@ const pubRes = await payFetch(`${API_BASE}/api/x402/publish-reel`, {
   body: JSON.stringify({
     videoUrl: videoUrl,
     caption: "<caption matching character vibe>",
-    hashtags: ["monadfluence", "aiugc"],
+    hashtags: ["moltfluence", "aiugc"],
     characterId: character.id,
   }),
 });

@@ -15,7 +15,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Monadfluence — Neural Studio 2060",
+  title: "Moltfluence — Neural Studio 2060",
   description: "Futuristic AI influencer creation platform interface.",
 };
 

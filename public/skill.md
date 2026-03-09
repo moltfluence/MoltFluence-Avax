@@ -1,38 +1,38 @@
 ---
-name: monadfluence
+name: moltfluence
 version: 2.0.0
-description: AI Influencer Pipeline on Monad. Autonomous research, identity synthesis, and LTX-2 video production with ERC-3009 gasless micropayments.
-homepage: https://monadfluence.vercel.app
-metadata: {"openclaw":{"emoji":"🎬","category":"creator-agent","api_base":"https://monadfluence.vercel.app"}}
+description: AI Influencer Pipeline on Avalanche. Autonomous research, identity synthesis, and LTX-2 video production with ERC-3009 gasless micropayments.
+homepage: https://moltfluence.vercel.app
+metadata: {"openclaw":{"emoji":"🎬","category":"creator-agent","api_base":"https://moltfluence.vercel.app"}}
 ---
 
-# Monadfluence Skills Index
+# Moltfluence Skills Index
 
 ## Agent Identity (ERC-8004)
 
-Standardized identity for AI agents on Monad.
+Standardized identity for AI agents on Avalanche.
 
 - **Agent ID**: 1069
 - **Identity Registry**: `0x8004A818BFB912233c491871b3d84c89A494BD9e`
-- **Network**: `eip155:10143` (Monad Testnet)
+- **Network**: `eip155:43113` (Avalanche Fuji Testnet)
 - **Identity Card**: [ipfs://bafkreih4psknqpatw2hhutwz4lkc2i7cslss37o4qcwngz542mdfzabnqm](https://gateway.pinata.cloud/ipfs/bafkreih4psknqpatw2hhutwz4lkc2i7cslss37o4qcwngz542mdfzabnqm)
 
 ## Skill Endpoints
 
 | Skill | URL | Purpose |
 |------|-----|---------|
-| `monadfluence-character` | `https://monadfluence.vercel.app/api/skills/monadfluence-character` | Persona interview, character image generation, approval loop |
-| `monadfluence-content-research` | `https://monadfluence.vercel.app/api/skills/monadfluence-content-research` | Trending topic discovery from Reddit, HN, CoinGecko, Tavily |
-| `monadfluence-script-writer` | `https://monadfluence.vercel.app/api/skills/monadfluence-script-writer` | Character-aware script generation (3 variants) |
-| `monadfluence-prompt-compiler` | `https://monadfluence.vercel.app/api/skills/monadfluence-prompt-compiler` | LTX-2 optimized prompt compilation + linting |
-| `monadfluence-content-publish` | `https://monadfluence.vercel.app/api/skills/monadfluence-content-publish` | Full pipeline: Research -> scripts -> generate video -> schedule |
+| `moltfluence-character` | `https://moltfluence.vercel.app/api/skills/moltfluence-character` | Persona interview, character image generation, approval loop |
+| `moltfluence-content-research` | `https://moltfluence.vercel.app/api/skills/moltfluence-content-research` | Trending topic discovery from Reddit, HN, CoinGecko, Tavily |
+| `moltfluence-script-writer` | `https://moltfluence.vercel.app/api/skills/moltfluence-script-writer` | Character-aware script generation (3 variants) |
+| `moltfluence-prompt-compiler` | `https://moltfluence.vercel.app/api/skills/moltfluence-prompt-compiler` | LTX-2 optimized prompt compilation + linting |
+| `moltfluence-content-publish` | `https://moltfluence.vercel.app/api/skills/moltfluence-content-publish` | Full pipeline: Research -> scripts -> generate video -> schedule |
 
 ## x402 Payment Contract (ERC-3009)
 
-Every endpoint under `/api/x402/*` requires gasless payment in USDC on Monad testnet.
+Every endpoint under `/api/x402/*` requires gasless payment in USDC on Avalanche testnet.
 
-- **Network**: `eip155:10143` (Monad testnet)
-- **USDC Address**: `0x534b2f3A21130d7a60830c2Df862319e593943A3`
+- **Network**: `eip155:43113` (Avalanche testnet)
+- **USDC Address**: `0x5425890298aed601595a70AB815c96711a31Bc65`
 - **Method**: `receiveWithAuthorization` (ERC-3009)
 
 ## API Surface

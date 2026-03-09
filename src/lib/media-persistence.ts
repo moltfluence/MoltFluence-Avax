@@ -101,7 +101,7 @@ export function getAssetRetentionPolicy(args: {
 
 async function persistViaEndpoint(input: PersistInput): Promise<PersistResult | null> {
   const endpoint =
-    process.env.MONADFLUENCE_ASSET_PERSIST_ENDPOINT?.trim() ||
+    process.env.MOLTFLUENCE_ASSET_PERSIST_ENDPOINT?.trim() ||
     process.env.MOLTFLUENCE_ASSET_PERSIST_ENDPOINT?.trim();
   if (!endpoint) return null;
 
@@ -154,7 +154,7 @@ function buildBlobPath(input: PersistInput, contentType: string): string {
   const date = new Date().toISOString().slice(0, 10);
   const ext = extensionFromContentType(contentType) ?? extensionFromUrl(input.sourceUrl) ?? defaultExt(input.kind);
   const id = sanitize(input.jobId ?? `${input.kind}-${Date.now()}`);
-  return `monadfluence/${input.kind}/${date}/${id}.${ext}`;
+  return `moltfluence/${input.kind}/${date}/${id}.${ext}`;
 }
 
 function extensionFromContentType(contentType: string): string | null {

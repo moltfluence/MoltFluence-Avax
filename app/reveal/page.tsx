@@ -92,9 +92,11 @@ export default function RevealPage() {
               Action Interface
             </p>
             <div className="mt-6 flex flex-col gap-3">
-              <HolographicButton variant="primary" size="md">
-                Neural Lock Confirmed - Proceed
-              </HolographicButton>
+              <Link href="/pipeline" className="w-full">
+                <HolographicButton variant="primary" size="md">
+                  Neural Lock Confirmed - Proceed
+                </HolographicButton>
+              </Link>
               <HolographicButton variant="secondary" size="md">
                 Regenerate Matrix
               </HolographicButton>

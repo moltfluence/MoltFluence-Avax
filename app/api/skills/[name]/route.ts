@@ -1,8 +1,8 @@
 /**
  * Serves SKILL.md files for OpenClaw bot consumption.
- * GET /api/skills/monadfluence-character → returns character creation skill
- * GET /api/skills/monadfluence-prompt-compiler → returns prompt compiler skill
- * GET /api/skills/monadfluence-content-publish → returns content generation/publish skill
+ * GET /api/skills/moltfluence-character → returns character creation skill
+ * GET /api/skills/moltfluence-prompt-compiler → returns prompt compiler skill
+ * GET /api/skills/moltfluence-content-publish → returns content generation/publish skill
  * Also supports legacy moltfluence-* aliases for backward compatibility.
  */
 
@@ -13,16 +13,16 @@ import { join } from "path";
 const SKILLS_DIR = join(process.cwd(), "skills");
 
 const CANONICAL_SKILLS = [
-  "monadfluence-character",
-  "monadfluence-prompt-compiler",
-  "monadfluence-content-publish",
+  "moltfluence-character",
+  "moltfluence-prompt-compiler",
+  "moltfluence-content-publish",
 ];
 
 const LEGACY_ALIASES: Record<string, string> = {
-  "moltfluence-character": "monadfluence-character",
-  "moltfluence-prompt-compiler": "monadfluence-prompt-compiler",
-  "moltfluence-content-publish": "monadfluence-content-publish",
-  "moltfluence-content": "monadfluence-content-publish",
+  "moltfluence-character": "moltfluence-character",
+  "moltfluence-prompt-compiler": "moltfluence-prompt-compiler",
+  "moltfluence-content-publish": "moltfluence-content-publish",
+  "moltfluence-content": "moltfluence-content-publish",
 };
 
 export async function GET(

@@ -1,20 +1,20 @@
 ---
-name: monadfluence-content
+name: moltfluence-content
 description: Generate short-form video content for your AI influencer and publish to Instagram. Uses x402 micropayments on BSC mainnet.
-homepage: https://monadfluence-bnb.vercel.app
-metadata: {"openclaw": {"emoji": "🎬", "requires": {"env": ["MONADFLUENCE_API_URL", "EVM_PRIVATE_KEY"]}}}
+homepage: https://moltfluence-bnb.vercel.app
+metadata: {"openclaw": {"emoji": "🎬", "requires": {"env": ["MOLTFLUENCE_API_URL", "EVM_PRIVATE_KEY"]}}}
 ---
 
 # Moltfluence — Content Creation Skill
 
-> Deprecated: use `monadfluence-content-publish` + `monadfluence-prompt-compiler` + `monadfluence-character`.
+> Deprecated: use `moltfluence-content-publish` + `moltfluence-prompt-compiler` + `moltfluence-character`.
 > This file is kept only as a historical reference and may contain outdated networks/headers.
 
 You are the Moltfluence Content Agent. Your job is to help the user generate trending short-form video content for their AI influencer and optionally publish it to Instagram.
 
 ## Prerequisites
 
-Check for `./monadfluence-character.json`. If missing, say: "Create a character first with `/monadfluence-character`."
+Check for `./moltfluence-character.json`. If missing, say: "Create a character first with `/moltfluence-character`."
 
 ## Payment — x402 on BSC Mainnet
 
@@ -40,7 +40,7 @@ The wallet needs USDT on BSC mainnet. Agent wallet needs BNB for gas + USDT for 
 
 ### Phase 1: Load Character
 
-Read `./monadfluence-character.json`. Greet the user with their character summary (niche, vibe, role).
+Read `./moltfluence-character.json`. Greet the user with their character summary (niche, vibe, role).
 
 ### Phase 2: Trend Harvesting
 
@@ -105,7 +105,7 @@ If approved and user wants Instagram publish:
 const res = await fetch402(`${API_BASE}/api/x402/publish-reel`, {
   method: "POST",
   headers: { "content-type": "application/json" },
-  body: JSON.stringify({ videoUrl: "<url>", caption: "<caption>", hashtags: ["monadfluence", "aiugc"] }),
+  body: JSON.stringify({ videoUrl: "<url>", caption: "<caption>", hashtags: ["moltfluence", "aiugc"] }),
 });
 ```
 

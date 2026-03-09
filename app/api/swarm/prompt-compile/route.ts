@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { compilePrompt } from "@/lib/monadfluence/swarm";
-import { VIDEO_MODELS } from "@/lib/monadfluence/types";
+import { compilePrompt } from "@/lib/moltfluence/swarm";
+import { VIDEO_MODELS } from "@/lib/moltfluence/types";
 
 const profileSchema = z.object({
   id: z.string(),

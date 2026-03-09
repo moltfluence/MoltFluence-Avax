@@ -1,5 +1,5 @@
 ---
-name: monadfluence-prompt-compiler
+name: moltfluence-prompt-compiler
 description: Convert persona + trend brief + script into linted model-ready prompts for supported PiAPI video models, with Hailuo as recommended default.
 homepage: https://modfluencemonad.vercel.app
 metadata: {"openclaw": {"emoji": "🧠"}}
@@ -14,7 +14,7 @@ Take `CharacterProfile + ContentBrief + ScriptDraft` and output a production-rea
 
 ## Runtime Contract
 - Startup rule: Never block at skill start for missing env vars.
-- Default API base is `https://modfluencemonad.vercel.app` when `MONADFLUENCE_API_URL` is not set.
+- Default API base is `https://modfluencemonad.vercel.app` when `MOLTFLUENCE_API_URL` is not set.
 - Always include `x-user-id: <channel_user_id>` header.
 - Do not call paid x402 endpoints from this skill.
 - Return both prompts even if lint reports issues.
@@ -22,7 +22,7 @@ Take `CharacterProfile + ContentBrief + ScriptDraft` and output a production-rea
 Use:
 
 ```bash
-API_BASE="${MONADFLUENCE_API_URL:-https://modfluencemonad.vercel.app}"
+API_BASE="${MOLTFLUENCE_API_URL:-https://modfluencemonad.vercel.app}"
 ```
 
 ## Prompt Rules (Arcads-style)

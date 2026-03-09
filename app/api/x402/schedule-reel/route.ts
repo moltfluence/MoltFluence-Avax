@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { schedulePost, getScheduledPosts, deleteScheduledPost, getScheduledPost } from "@/lib/monadfluence/state";
-import { resolveUserKey } from "@/lib/monadfluence/request-identity";
+import { schedulePost, getScheduledPosts, deleteScheduledPost, getScheduledPost } from "@/lib/moltfluence/state";
+import { resolveUserKey } from "@/lib/moltfluence/request-identity";
 
 const scheduleSchema = z.object({
   videoUrl: z.string().url(),

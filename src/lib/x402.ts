@@ -4,7 +4,7 @@
  */
 
 import { NextResponse } from "next/server";
-import { getX402Config } from "@/lib/monadfluence/x402-config";
+import { getX402Config } from "@/lib/moltfluence/x402-config";
 
 export interface X402PaymentOptionV2 {
   scheme: "exact";

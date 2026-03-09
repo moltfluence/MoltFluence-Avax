@@ -5,10 +5,10 @@
 
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { validateCaption } from "@/lib/monadfluence/qa";
+import { validateCaption } from "@/lib/moltfluence/qa";
 import { getTreasuryWallet } from "@/lib/video-pricing";
-import { runLog } from "@/lib/monadfluence/run-log";
-import { getInstagramConnection } from "@/lib/monadfluence/instagram-connection";
+import { runLog } from "@/lib/moltfluence/run-log";
+import { getInstagramConnection } from "@/lib/moltfluence/instagram-connection";
 import {
   microUsdcToUsd,
   parsePaymentHeader,
@@ -16,7 +16,7 @@ import {
   verifyPaymentHeader,
   x402PaymentRequired,
 } from "@/lib/x402";
-import { resolveUserKey } from "@/lib/monadfluence/request-identity";
+import { resolveUserKey } from "@/lib/moltfluence/request-identity";
 
 const PUBLISH_COST_USDC_ATOMIC = 25_000; // $0.025 in 6-decimal USDC units
 

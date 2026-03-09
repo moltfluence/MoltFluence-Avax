@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { generateScripts } from "@/lib/monadfluence/swarm";
-import { saveContentBrief } from "@/lib/monadfluence/state";
-import { resolveUserKey } from "@/lib/monadfluence/request-identity";
+import { generateScripts } from "@/lib/moltfluence/swarm";
+import { saveContentBrief } from "@/lib/moltfluence/state";
+import { resolveUserKey } from "@/lib/moltfluence/request-identity";
 
 const schema = z.object({
   characterProfile: z.object({

@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { getCharacterProfile, saveCharacterProfile } from "@/lib/monadfluence/state";
-import { resolveUserKey } from "@/lib/monadfluence/request-identity";
+import { getCharacterProfile, saveCharacterProfile } from "@/lib/moltfluence/state";
+import { resolveUserKey } from "@/lib/moltfluence/request-identity";
+import { generateImagePrompt } from "@/lib/llm";
 
 const schema = z.object({
   id: z.string().optional(),
@@ -40,6 +41,10 @@ export async function POST(req: Request) {
   try {
     const payload = schema.parse(await req.json());
     const userKey = resolveUserKey(req, null);
+
+    if (!payload.imagePrompt) {
+      payload.imagePrompt = await generateImagePrompt(payload);
+    }
 
     const profile = await saveCharacterProfile({
       ...payload,

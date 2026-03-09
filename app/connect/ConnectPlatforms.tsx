@@ -51,7 +51,7 @@ export default function ConnectPlatforms() {
           <a
             href="/api/auth/instagram"
             onClick={() => setIgStatus("connecting")}
-            className="w-full flex items-center justify-center gap-2 h-11 rounded-lg bg-gradient-to-r from-purple-600 to-pink-500 text-white text-sm font-bold hover:from-purple-500 hover:to-pink-400 transition-all shadow-md"
+            className="w-full flex items-center justify-center gap-2 h-11 rounded-lg bg-gradient-to-r from-red-600 to-pink-500 text-white text-sm font-bold hover:from-red-500 hover:to-pink-400 transition-all shadow-md"
           >
             <span className="material-symbols-outlined text-[16px]">add_link</span>
             Connect Instagram
@@ -62,8 +62,8 @@ export default function ConnectPlatforms() {
       {/* MONAD Chain Wallet (coming soon) */}
       <div className="rounded-2xl border border-white/10 bg-surface-dark p-6 opacity-60">
         <div className="flex items-center gap-3 mb-4">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-500/10 ring-1 ring-purple-500/20">
-            <span className="material-symbols-outlined text-purple-400 text-[22px]">account_balance_wallet</span>
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-red-500/10 ring-1 ring-red-500/20">
+            <span className="material-symbols-outlined text-red-400 text-[22px]">account_balance_wallet</span>
           </div>
           <div>
             <h2 className="text-lg font-bold text-white">MONAD Chain Wallet</h2>

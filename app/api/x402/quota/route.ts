@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { getQuotaState, listQuota } from "@/lib/monadfluence/state";
-import { resolveUserKey } from "@/lib/monadfluence/request-identity";
+import { getQuotaState, listQuota } from "@/lib/moltfluence/state";
+import { resolveUserKey } from "@/lib/moltfluence/request-identity";
 
 export async function GET(req: Request) {
   try {

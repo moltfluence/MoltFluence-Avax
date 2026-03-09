@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { runContentResearch } from "@/lib/research";
-import { listAllCharacters } from "@/lib/monadfluence/state";
+import { listAllCharacters } from "@/lib/moltfluence/state";
 
 export const dynamic = "force-dynamic";
 

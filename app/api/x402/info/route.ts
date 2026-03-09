@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getX402Config } from "@/lib/monadfluence/x402-config";
+import { getX402Config } from "@/lib/moltfluence/x402-config";
 import { getTreasuryWallet } from "@/lib/video-pricing";
 
 /**
@@ -25,7 +25,7 @@ export async function GET(req: Request) {
     supportedUrl,
     assetPersistence: {
       externalEndpointConfigured: Boolean(
-        process.env.MONADFLUENCE_ASSET_PERSIST_ENDPOINT?.trim() ||
+        process.env.MOLTFLUENCE_ASSET_PERSIST_ENDPOINT?.trim() ||
           process.env.MOLTFLUENCE_ASSET_PERSIST_ENDPOINT?.trim(),
       ),
       vercelBlobConfigured: Boolean(process.env.BLOB_READ_WRITE_TOKEN?.trim()),

@@ -1,5 +1,5 @@
 ---
-name: monadfluence-character
+name: moltfluence-character
 description: Use when a user wants to set up an AI influencer character. Ask a short persona interview, generate a character image via x402, and persist an approved CharacterProfile for downstream skills.
 homepage: https://modfluencemonad.vercel.app
 compatibility: Requires an x402-capable runtime for paid endpoints. For custom Node bots, use Node 18+ (Node 20 recommended).
@@ -15,7 +15,7 @@ Guide the user through a short interview, generate a character image through x40
 
 ## Runtime Contract
 - Startup rule: Never block at skill start for missing env vars. Begin interview immediately.
-- Default API base is `https://modfluencemonad.vercel.app` when `MONADFLUENCE_API_URL` is not set.
+- Default API base is `https://modfluencemonad.vercel.app` when `MOLTFLUENCE_API_URL` is not set.
 - The bot wallet comes from `EVM_PRIVATE_KEY` only for paid calls. Do not attempt to create wallets inside this skill.
 - Use one stable user identity header on every call: `x-user-id: <channel_user_id>`.
 - Never print the private key. Never return raw signing payloads to the user.
@@ -23,14 +23,14 @@ Guide the user through a short interview, generate a character image through x40
 Use:
 
 ```bash
-API_BASE="${MONADFLUENCE_API_URL:-https://modfluencemonad.vercel.app}"
+API_BASE="${MOLTFLUENCE_API_URL:-https://modfluencemonad.vercel.app}"
 ```
 
 ---
 
-## Payment — x402 on Monad Testnet (IMPORTANT)
+## Payment — x402 on Avalanche Fuji Testnet (IMPORTANT)
 
-All paid endpoints (`/api/x402/*`) use x402 micropayments with USDC on Monad testnet (`eip155:10143`).
+All paid endpoints (`/api/x402/*`) use x402 micropayments with USDC on Avalanche testnet (`eip155:43113`).
 
 ### How it works (step by step)
 
@@ -63,7 +63,7 @@ import { ExactEvmScheme } from "@x402/evm";
 import { privateKeyToAccount } from "viem/accounts";
 import { fetch as undiciFetch } from "undici";
 
-const API_BASE = process.env.MONADFLUENCE_API_URL || "https://modfluencemonad.vercel.app";
+const API_BASE = process.env.MOLTFLUENCE_API_URL || "https://modfluencemonad.vercel.app";
 const USER_ID = "<channel_user_id>"; // stable per user (telegram user id, discord id, etc.)
 
 const payer = privateKeyToAccount(process.env.EVM_PRIVATE_KEY as `0x${string}`);
@@ -134,7 +134,7 @@ Just use that platform's x402 payment tool to handle the 402 challenge. You don'
 
 ### Error handling
 - If `EVM_PRIVATE_KEY` is missing when a 402 is encountered, stop and ask for wallet configuration — keep collected interview data.
-- If payment fails with `insufficient funds`, tell user their wallet needs USDC on Monad testnet.
+- If payment fails with `insufficient funds`, tell user their wallet needs USDC on Avalanche testnet.
 - If `payFetch` throws after retries, wait 30 seconds and try again. Do not give up.
 - Check `GET ${API_BASE}/api/x402/info` for current network/facilitator details.
 
@@ -208,7 +208,7 @@ if (result.status === "failed") {
 
 Retention rule:
 - If `result.persisted` is `false`, the URL may be short-lived.
-- Configure `MONADFLUENCE_ASSET_PERSIST_ENDPOINT` or `BLOB_READ_WRITE_TOKEN` server-side for automatic durable copies.
+- Configure `MOLTFLUENCE_ASSET_PERSIST_ENDPOINT` or `BLOB_READ_WRITE_TOKEN` server-side for automatic durable copies.
 
 5. Show the image URL and ask `approve | regenerate`.
 - Maximum regenerations: 2.

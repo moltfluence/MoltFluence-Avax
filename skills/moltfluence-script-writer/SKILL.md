@@ -1,5 +1,5 @@
 ---
-skill: monadfluence-script-writer
+skill: moltfluence-script-writer
 version: 1.0.0
 consumer: openclaw-tg-bot
 trigger: script-generation-request
@@ -17,7 +17,7 @@ Activate this skill ONLY when the user request matches one of:
 - Has selected a topic (from content research or provided manually) and wants script variants
 - Mentions scripting, script writing, or "write me a hook/body/CTA"
 
-Do NOT activate for: topic research, content publishing, video editing, caption writing, scheduling, analytics, or character creation. If the user needs topics first, hand off to the `monadfluence-content-research` skill.
+Do NOT activate for: topic research, content publishing, video editing, caption writing, scheduling, analytics, or character creation. If the user needs topics first, hand off to the `moltfluence-content-research` skill.
 
 **Pre-conditions — all must be true before proceeding:**
 

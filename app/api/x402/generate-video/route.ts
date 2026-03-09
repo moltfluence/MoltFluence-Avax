@@ -6,10 +6,10 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getVideoCostAtomic, getTreasuryWallet } from "@/lib/video-pricing";
-import { lintVideoPrompt } from "@/lib/monadfluence/prompt-lint";
-import { getX402Config } from "@/lib/monadfluence/x402-config";
-import { runLog } from "@/lib/monadfluence/run-log";
-import type { CharacterProfile, GenerationRecord } from "@/lib/monadfluence/types";
+import { lintVideoPrompt } from "@/lib/moltfluence/prompt-lint";
+import { getX402Config } from "@/lib/moltfluence/x402-config";
+import { runLog } from "@/lib/moltfluence/run-log";
+import type { CharacterProfile, GenerationRecord } from "@/lib/moltfluence/types";
 import { getVideoAdapter } from "@/lib/videoGen";
 import {
   microUsdcToUsd,
@@ -18,8 +18,8 @@ import {
   verifyPaymentHeader,
   x402PaymentRequired,
 } from "@/lib/x402";
-import { resolveUserKey } from "@/lib/monadfluence/request-identity";
-import { consumeFreeQuota, getCharacterProfile, getQuotaState, recordGeneration } from "@/lib/monadfluence/state";
+import { resolveUserKey } from "@/lib/moltfluence/request-identity";
+import { consumeFreeQuota, getCharacterProfile, getQuotaState, recordGeneration } from "@/lib/moltfluence/state";
 
 const DEFAULT_MODEL = "ltx" as const;
 const DEFAULT_DURATION = 6;
@@ -73,6 +73,9 @@ export async function POST(req: Request): Promise<NextResponse> {
     let quotaUsed = 0;
     let paymentMeta: GenerationRecord["payment"] | undefined;
 
+    // For the Hackathon Demo, we WANT MetaMask to pop up here to prove Avalanche integration.
+    // So we still issue the 402 challenge, but the `facilitator/settle` route will bypass the
+    // on-chain broadcast later to save AVAX gas.
     if (!payment) {
       const consumed = await consumeFreeQuota(userKey, "basic", DEFAULT_MODEL);
       quotaState = consumed.quota;
@@ -124,6 +127,7 @@ export async function POST(req: Request): Promise<NextResponse> {
       });
     }
 
+    const DEMO_MODE = process.env.DEMO_MODE === "true";
     const apiKey = process.env.LTX_API_KEY;
     if (!apiKey) {
       return NextResponse.json({ error: "LTX_API_KEY not configured" }, { status: 500 });

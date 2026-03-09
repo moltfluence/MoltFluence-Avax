@@ -1,5 +1,5 @@
 ---
-skill: monadfluence-content-research
+skill: moltfluence-content-research
 version: 1.0.0
 consumer: openclaw-tg-bot
 trigger: content-research-request
@@ -17,7 +17,7 @@ Activate this skill ONLY when the user request matches one of:
 - Asks for content ideas, topic suggestions, or "what should I post about"
 - Mentions trend research, topic discovery, or content research
 
-Do NOT activate for: script writing (use `monadfluence-script-writer`), video generation, publishing, character creation, prompt compilation, or scheduling.
+Do NOT activate for: script writing (use `moltfluence-script-writer`), video generation, publishing, character creation, prompt compilation, or scheduling.
 
 ---
 
@@ -124,7 +124,7 @@ Display all topics ranked by engagement score. Use this format:
 ### Step 5 — Handle Follow-ups
 
 After presenting topics:
-- If user picks a topic → hand off to `monadfluence-script-writer` with the selected topic
+- If user picks a topic → hand off to `moltfluence-script-writer` with the selected topic
 - If user asks for a different niche → re-run Step 2 with the new niche
 - If user provides a manual topic → re-run Step 2 with `manualTopic` set
 

@@ -5,7 +5,7 @@
  */
 
 import { NextResponse } from "next/server";
-import { getGeneration } from "@/lib/monadfluence/state";
+import { getGeneration } from "@/lib/moltfluence/state";
 
 export async function GET(_req: Request, context: { params: Promise<{ jobId: string }> }) {
   try {

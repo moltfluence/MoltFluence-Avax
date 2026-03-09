@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { getDueScheduledPosts, updateScheduledPost } from "@/lib/monadfluence/state";
-import { getInstagramConnection } from "@/lib/monadfluence/instagram-connection";
+import { getDueScheduledPosts, updateScheduledPost } from "@/lib/moltfluence/state";
+import { getInstagramConnection } from "@/lib/moltfluence/instagram-connection";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;

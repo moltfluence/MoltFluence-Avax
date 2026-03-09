@@ -4,7 +4,7 @@
 
 import type { ResearchItem } from "./types";
 
-const USER_AGENT = "Mozilla/5.0 (compatible; Moltfluence/1.0; +https://monadfluence.com)";
+const USER_AGENT = "Mozilla/5.0 (compatible; Moltfluence/1.0; +https://moltfluence.com)";
 const ITEMS_PER_SUBREDDIT = 25;
 
 interface RedditPost {

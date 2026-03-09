@@ -6,8 +6,8 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getTreasuryWallet } from "@/lib/video-pricing";
-import { runLog } from "@/lib/monadfluence/run-log";
-import { updateGeneration } from "@/lib/monadfluence/state";
+import { runLog } from "@/lib/moltfluence/run-log";
+import { updateGeneration } from "@/lib/moltfluence/state";
 import { requestCaptions } from "@/lib/caption-service";
 import {
   microUsdcToUsd,
@@ -16,7 +16,7 @@ import {
   verifyPaymentHeader,
   x402PaymentRequired,
 } from "@/lib/x402";
-import { resolveUserKey } from "@/lib/monadfluence/request-identity";
+import { resolveUserKey } from "@/lib/moltfluence/request-identity";
 
 const CAPTION_COST_USDC_ATOMIC = 10_000; // $0.01 in 6-decimal USDC units
 

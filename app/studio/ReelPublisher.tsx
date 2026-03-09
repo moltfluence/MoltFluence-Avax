@@ -15,7 +15,7 @@ type PublishResult = {
 
 export default function ReelPublisher({ videoUrl }: Props) {
   const [caption, setCaption] = useState("");
-  const [hashtags, setHashtags] = useState("monadfluence,aiugc");
+  const [hashtags, setHashtags] = useState("moltfluence,aiugc");
   const [characterId, setCharacterId] = useState("");
   const [status, setStatus] = useState<"idle" | "publishing" | "done" | "error">("idle");
   const [result, setResult] = useState<PublishResult | null>(null);
@@ -103,7 +103,7 @@ export default function ReelPublisher({ videoUrl }: Props) {
                 value={hashtags}
                 onChange={(e) => setHashtags(e.target.value)}
                 disabled={status === "publishing" || status === "done"}
-                placeholder="monadfluence,aiugc,ugcads"
+                placeholder="moltfluence,aiugc,ugcads"
                 className="w-full h-10 rounded-lg bg-black/20 border border-white/10 text-white text-sm px-3 placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-primary/50"
               />
             </div>

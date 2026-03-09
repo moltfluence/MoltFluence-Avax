@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { harvestTrends } from "@/lib/monadfluence/swarm";
+import { harvestTrends } from "@/lib/moltfluence/swarm";
 
 const schema = z.object({
   niche: z.string().min(2).max(80),

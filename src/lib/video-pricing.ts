@@ -1,4 +1,4 @@
-import type { VideoModel } from "@/lib/monadfluence/types";
+import type { VideoModel } from "@/lib/moltfluence/types";
 
 /**
  * Pricing in micro-USDC (6 decimals).

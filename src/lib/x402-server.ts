@@ -7,15 +7,15 @@ import { ExactEvmScheme } from "@x402/evm/exact/server";
 import type { RouteConfig } from "@x402/next";
 import type { Network } from "@x402/core/types";
 
-const NETWORK = process.env.X402_CAIP2?.trim() || process.env.X402_NETWORK?.trim() || "eip155:10143";
+const NETWORK = process.env.X402_CAIP2?.trim() || process.env.X402_NETWORK?.trim() || "eip155:43113";
 export const MONAD_NETWORK: Network = NETWORK as Network;
 
-const MONAD_USDC = process.env.X402_ASSET?.trim() || "0x534b2f3A21130d7a60830c2Df862319e593943A3";
+const MONAD_USDC = process.env.X402_ASSET?.trim() || "0x5425890298aed601595a70AB815c96711a31Bc65";
 const ASSET_NAME = process.env.X402_ASSET_NAME?.trim() || "USDC";
 const ASSET_VERSION = process.env.X402_ASSET_VERSION?.trim() || "2";
 
 const FACILITATOR_URL =
-  process.env.X402_FACILITATOR_URL?.trim() || "https://x402-facilitator.molandak.org";
+  process.env.X402_FACILITATOR_URL?.trim() || "https://x402-facilitator.x402.org";
 
 const facilitatorClient = new HTTPFacilitatorClient({ url: FACILITATOR_URL });
 export const server = new x402ResourceServer(facilitatorClient);
@@ -23,7 +23,7 @@ export const server = new x402ResourceServer(facilitatorClient);
 const monadScheme = new ExactEvmScheme();
 monadScheme.registerMoneyParser(async (amount: number, network: string) => {
   if (network === (MONAD_NETWORK as string)) {
-    // Monad USDC has 6 decimals
+    // Avalanche USDC has 6 decimals
     const wei = BigInt(Math.floor(amount * 1e6)).toString();
     return {
       amount: wei,

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getInstagramConnection } from "@/lib/monadfluence/instagram-connection";
+import { getInstagramConnection } from "@/lib/moltfluence/instagram-connection";
 
 export async function GET() {
   const envConnected = Boolean(

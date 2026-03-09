@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import { saveInstagramConnection } from "@/lib/monadfluence/instagram-connection";
+import { saveInstagramConnection } from "@/lib/moltfluence/instagram-connection";
 
 const DEFAULT_GRAPH_VERSION = "v21.0";
 
