@@ -2,6 +2,8 @@
 
 Moltfluence is an autonomous AI influencer pipeline built on the **Avalanche C-Chain**. It empowers creators and brands to deploy agentic AI personas that can research trending topics, write engaging scripts, generate cinematic videos, and autonomously publish to social media — all facilitated through zero-friction, gasless x402 micropayments on Avalanche.
 
+> **🎥 [Click here to view the Hackathon Demo Video](https://drive.google.com/drive/u/0/folders/1_DLRPavEPLoevxE5lFntpS2gsV-7rR6h)**
+
 ---
 
 ## 🏔️ The Problem We Are Solving
