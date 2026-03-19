@@ -14,16 +14,10 @@
  * Ref: https://github.com/0xgasless/agent-sdk
  */
 
-import { AgentSDK, fujiConfig } from "@0xgasless/agent-sdk";
-import { Wallet, JsonRpcProvider } from "ethers";
+// Dynamic import to avoid bundling issues on Vercel serverless
+let sdkInstance: any | null = null;
 
-// ---------------------------------------------------------------------------
-// Singleton SDK instance
-// ---------------------------------------------------------------------------
-
-let sdkInstance: AgentSDK | null = null;
-
-function getSDK(): AgentSDK | null {
+async function getSDK(): Promise<any | null> {
   if (sdkInstance) return sdkInstance;
 
   const privateKey = process.env.AGENT_PRIVATE_KEY;
@@ -32,18 +26,26 @@ function getSDK(): AgentSDK | null {
     return null;
   }
 
-  const provider = new JsonRpcProvider(
-    fujiConfig.networks.fuji.rpcUrl
-  );
-  const signer = new Wallet(privateKey, provider);
+  try {
+    const { AgentSDK, fujiConfig } = await import("@0xgasless/agent-sdk");
+    const { Wallet, JsonRpcProvider } = await import("ethers");
 
-  sdkInstance = new AgentSDK({
-    ...fujiConfig,
-    signer,
-  });
+    const provider = new JsonRpcProvider(
+      fujiConfig.networks.fuji.rpcUrl
+    );
+    const signer = new Wallet(privateKey, provider);
 
-  console.log("[agent-wallet] SDK initialized on Avalanche Fuji");
-  return sdkInstance;
+    sdkInstance = new AgentSDK({
+      ...fujiConfig,
+      signer,
+    });
+
+    console.log("[agent-wallet] SDK initialized on Avalanche Fuji");
+    return sdkInstance;
+  } catch (err) {
+    console.error("[agent-wallet] SDK init failed:", (err as Error).message);
+    return null;
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -58,7 +60,7 @@ export async function registerAgentIdentity(
   name: string,
   metadataUri: string
 ): Promise<{ agentId: string; txHash: string } | null> {
-  const sdk = getSDK();
+  const sdk = await getSDK();
   if (!sdk) return null;
 
   try {
@@ -81,7 +83,7 @@ export async function registerAgentIdentity(
 export async function getAgentReputation(
   agentId: number
 ): Promise<{ score: number } | null> {
-  const sdk = getSDK();
+  const sdk = await getSDK();
   if (!sdk) return null;
 
   try {
@@ -111,7 +113,7 @@ export async function agentFetch(
   url: string,
   init?: RequestInit
 ): Promise<Response> {
-  const sdk = getSDK();
+  const sdk = await getSDK();
   if (!sdk) {
     // Fallback to regular fetch if SDK not configured
     return fetch(url, init);
@@ -146,7 +148,7 @@ export async function getAgentWalletInfo(): Promise<{
     defaultToken: string;
   };
 } | null> {
-  const sdk = getSDK();
+  const sdk = await getSDK();
   if (!sdk) return null;
 
   try {
