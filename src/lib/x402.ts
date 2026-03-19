@@ -84,8 +84,27 @@ export function x402PaymentRequired(opts: {
     extensions: {},
   };
 
-  const jsonStr = JSON.stringify(body);
-  const base64Payload = Buffer.from(jsonStr).toString("base64");
+  // Also include 0xGasless agent-sdk compatible paymentRequirements
+  // so agents using @0xgasless/agent-sdk can auto-pay via sdk.fetch()
+  // Ref: https://github.com/0xgasless/agent-sdk/blob/main/src/x402/httpClient.ts
+  const agentSdkBody = {
+    ...body,
+    paymentRequirements: {
+      scheme: "exact" as const,
+      network: config.primary.caip2,
+      asset: config.primary.asset,
+      payTo: opts.recipient,
+      maxAmountRequired: amountWei,
+      maxTimeoutSeconds: 300,
+      description: opts.description,
+      resource: opts.resourceUrl,
+      // 0xGasless relayer contract on Fuji — used as EIP-712 verifyingContract
+      relayerContract: process.env.X402_RELAYER_CONTRACT || "0x8BD697733c31293Be2327026d01aE393Ab2675C4",
+    },
+  };
+
+  const jsonStr = JSON.stringify(agentSdkBody);
+  const base64Payload = Buffer.from(JSON.stringify(body)).toString("base64");
 
   return new NextResponse(jsonStr, {
     status: 402,
@@ -388,7 +407,10 @@ export function parsePaymentHeader(req: Request): X402PaymentHeader | null {
     req.headers.get("PAYMENT-SIGNATURE") ??
     req.headers.get("Payment-Signature") ??
     req.headers.get("x-payment") ??
-    req.headers.get("X-PAYMENT");
+    req.headers.get("X-PAYMENT") ??
+    // 0xGasless agent-sdk sends the settled tx hash via this header
+    req.headers.get("x402-payment") ??
+    req.headers.get("X402-Payment");
 
   if (!raw || raw.trim().length === 0) return null;
 
