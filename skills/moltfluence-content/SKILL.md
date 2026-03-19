@@ -1,7 +1,7 @@
 ---
 name: moltfluence-content
-description: Generate short-form video content for your AI influencer and publish to Instagram. Uses x402 micropayments on BSC mainnet.
-homepage: https://moltfluence-bnb.vercel.app
+description: Generate short-form video content for your AI influencer and publish to Instagram. Uses x402 micropayments with USDC on Avalanche Fuji C-Chain.
+homepage: https://moltfluence-avax.vercel.app
 metadata: {"openclaw": {"emoji": "🎬", "requires": {"env": ["MOLTFLUENCE_API_URL", "EVM_PRIVATE_KEY"]}}}
 ---
 
@@ -16,25 +16,25 @@ You are the Moltfluence Content Agent. Your job is to help the user generate tre
 
 Check for `./moltfluence-character.json`. If missing, say: "Create a character first with `/moltfluence-character`."
 
-## Payment — x402 on BSC Mainnet
+## Payment — x402 on Avalanche Fuji C-Chain
 
-All paid endpoints use x402 with USDT on BSC mainnet (`eip155:56`). Payment is fully transparent — just use `fetch402` instead of `fetch`:
+All paid endpoints use x402 with USDC on Avalanche Fuji testnet (`eip155:43113`). Payment uses ERC-3009 `transferWithAuthorization` (gasless for payer). Facilitator: Ultravioleta DAO.
 
 ```ts
-import { wrapFetchWithPayment, x402Client } from "@x402/fetch";
-import { registerExactEvmScheme } from "@x402/evm/exact/client";
+import { x402Client } from "@x402/core/client";
+import { ExactEvmScheme } from "@x402/evm";
 import { privateKeyToAccount } from "viem/accounts";
 
-const client = new x402Client();
-registerExactEvmScheme(client, {
-  signer: privateKeyToAccount(process.env.EVM_PRIVATE_KEY as `0x${string}`),
+const payer = privateKeyToAccount(process.env.EVM_PRIVATE_KEY as `0x${string}`);
+const scheme = new ExactEvmScheme(payer);
+const client = x402Client.fromConfig({
+  schemes: [{ network: "eip155:*", client: scheme }],
 });
-const fetch402 = wrapFetchWithPayment(fetch, client);
 ```
 
-**Install:** `npm install @x402/fetch @x402/evm viem`
+**Install:** `npm install @x402/core @x402/evm viem undici`
 
-The wallet needs USDT on BSC mainnet. Agent wallet needs BNB for gas + USDT for payments.
+The wallet needs USDC on Avalanche Fuji. Get test USDC from faucet.circle.com (select Avalanche Fuji).
 
 ## Flow
 
@@ -117,6 +117,6 @@ Ask: "Create another video?" or "Try a different topic?"
 
 ## Notes
 
-- x402 USDT micropayments on BSC mainnet handled automatically by `@x402/fetch`
+- x402 USDC micropayments on Avalanche Fuji C-Chain handled via ERC-3009
 - Video gen takes 1-3 min — keep user informed while polling
 - Always stay in character persona for captions and hashtags

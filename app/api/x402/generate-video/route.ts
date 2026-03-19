@@ -1,6 +1,10 @@
 /**
  * x402-compatible video generation endpoint.
  * Uses LTX-2-fast (1920x1080, English audio included).
+ *
+ * After successful paid generation, sends a cross-chain content attestation
+ * via Avalanche Teleporter (AWM) to the ContentAttestationRegistry.
+ * Ref: https://build.avax.network/docs/cross-chain/teleporter/overview
  */
 
 import { NextResponse } from "next/server";
@@ -20,6 +24,7 @@ import {
 } from "@/lib/x402";
 import { resolveUserKey } from "@/lib/moltfluence/request-identity";
 import { consumeFreeQuota, getCharacterProfile, getQuotaState, recordGeneration } from "@/lib/moltfluence/state";
+import { computeContentHash, sendAttestation } from "@/lib/teleporter";
 
 const DEFAULT_MODEL = "ltx" as const;
 const DEFAULT_DURATION = 6;
@@ -178,6 +183,42 @@ export async function POST(req: Request): Promise<NextResponse> {
       quotaRemaining: quotaState.tiers["basic"].remaining,
     });
 
+    // ── Teleporter: Cross-chain content attestation ────────────────────
+    // After paid generation, send an attestation via Avalanche Teleporter
+    // to the ContentAttestationRegistry on the destination L1.
+    // This creates a cross-chain verifiable proof of content generation.
+    // Ref: https://build.avax.network/docs/cross-chain/teleporter/overview
+    let attestation: { messageID: string; txHash: string; contentHash: string; explorerUrl: string } | null = null;
+    if (paid && videoUrl && paymentMeta?.payer) {
+      try {
+        const contentHash = computeContentHash({
+          prompt: promptForGeneration,
+          videoUrl,
+          characterId: payload.characterId,
+          jobId,
+        });
+
+        attestation = await sendAttestation({
+          contentHash,
+          payer: paymentMeta.payer as `0x${string}`,
+          amountUsdc: costAtomic,
+          model: DEFAULT_MODEL,
+          metadataUri: `${resource}/${jobId}`,
+        });
+
+        if (attestation) {
+          runLog("teleporter.attestation.sent", {
+            messageID: attestation.messageID,
+            contentHash: attestation.contentHash,
+            txHash: attestation.txHash,
+          });
+        }
+      } catch (err) {
+        // Attestation is non-blocking — video was already generated
+        console.warn("[teleporter] Attestation failed (non-blocking):", (err as Error).message);
+      }
+    }
+
     return NextResponse.json({
       jobId,
       model: DEFAULT_MODEL,
@@ -190,6 +231,13 @@ export async function POST(req: Request): Promise<NextResponse> {
       paid,
       quotaUsed,
       quotaRemaining: quotaState.tiers["basic"].remaining,
+      // Cross-chain attestation (Avalanche Teleporter)
+      attestation: attestation ? {
+        messageID: attestation.messageID,
+        contentHash: attestation.contentHash,
+        txHash: attestation.txHash,
+        explorerUrl: attestation.explorerUrl,
+      } : undefined,
     });
   } catch (error) {
     return NextResponse.json({ error: (error as Error).message }, { status: 400 });

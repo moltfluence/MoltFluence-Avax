@@ -1,55 +1,75 @@
 ---
 name: moltfluence
-version: 2.0.0
-description: AI Influencer Pipeline on Avalanche. Autonomous research, identity synthesis, and LTX-2 video production with ERC-3009 gasless micropayments.
-homepage: https://moltfluence.vercel.app
-metadata: {"openclaw":{"emoji":"🎬","category":"creator-agent","api_base":"https://moltfluence.vercel.app"}}
+version: 3.0.0
+description: AI Influencer Pipeline on Avalanche with cross-chain content attestation via Teleporter (AWM). Autonomous research, identity synthesis, LTX-2 video production, and ERC-3009 gasless micropayments.
+homepage: https://moltfluence-avax.vercel.app
+metadata: {"openclaw":{"emoji":"🎬","category":"creator-agent","api_base":"https://moltfluence-avax.vercel.app"}}
 ---
 
 # Moltfluence Skills Index
 
-## Agent Identity (ERC-8004)
+## Architecture
 
-Standardized identity for AI agents on Avalanche.
-
-- **Agent ID**: 1069
-- **Identity Registry**: `0x8004A818BFB912233c491871b3d84c89A494BD9e`
-- **Network**: `eip155:43113` (Avalanche Fuji Testnet)
-- **Identity Card**: [ipfs://bafkreih4psknqpatw2hhutwz4lkc2i7cslss37o4qcwngz542mdfzabnqm](https://gateway.pinata.cloud/ipfs/bafkreih4psknqpatw2hhutwz4lkc2i7cslss37o4qcwngz542mdfzabnqm)
+Autonomous AI influencer pipeline on Avalanche Fuji C-Chain with:
+- **x402 micropayments** — ERC-3009 gasless USDC transfers via Ultravioleta DAO facilitator
+- **Cross-chain attestation** — Content provenance via Avalanche Teleporter (AWM + BLS multi-signatures)
+- **8 agent skills** — Full pipeline from character creation to Instagram publishing
 
 ## Skill Endpoints
 
 | Skill | URL | Purpose |
 |------|-----|---------|
-| `moltfluence-character` | `https://moltfluence.vercel.app/api/skills/moltfluence-character` | Persona interview, character image generation, approval loop |
-| `moltfluence-content-research` | `https://moltfluence.vercel.app/api/skills/moltfluence-content-research` | Trending topic discovery from Reddit, HN, CoinGecko, Tavily |
-| `moltfluence-script-writer` | `https://moltfluence.vercel.app/api/skills/moltfluence-script-writer` | Character-aware script generation (3 variants) |
-| `moltfluence-prompt-compiler` | `https://moltfluence.vercel.app/api/skills/moltfluence-prompt-compiler` | LTX-2 optimized prompt compilation + linting |
-| `moltfluence-content-publish` | `https://moltfluence.vercel.app/api/skills/moltfluence-content-publish` | Full pipeline: Research -> scripts -> generate video -> schedule |
+| `moltfluence-character` | `/api/skills/moltfluence-character` | Persona interview, character image generation, approval loop |
+| `moltfluence-content-research` | `/api/skills/moltfluence-content-research` | Trending topic discovery from Reddit, HN, CoinGecko, Tavily |
+| `moltfluence-script-writer` | `/api/skills/moltfluence-script-writer` | Character-aware script generation (3 variants) |
+| `moltfluence-prompt-compiler` | `/api/skills/moltfluence-prompt-compiler` | LTX-2 optimized prompt compilation + linting |
+| `moltfluence-content-publish` | `/api/skills/moltfluence-content-publish` | Full pipeline: research → scripts → video → publish |
+| `moltfluence-captions` | `/api/skills/moltfluence-captions` | Burn word-by-word animated captions into videos |
+| `moltfluence-schedule` | `/api/skills/moltfluence-schedule` | Schedule, list, and delete future Instagram posts |
+| `moltfluence-attestation` | `/api/skills/moltfluence-attestation` | Verify cross-chain content attestations via Teleporter |
 
-## x402 Payment Contract (ERC-3009)
+## x402 Payment (Avalanche Fuji C-Chain)
 
-Every endpoint under `/api/x402/*` requires gasless payment in USDC on Avalanche testnet.
+Every endpoint under `/api/x402/*` uses gasless USDC payment on Avalanche.
 
-- **Network**: `eip155:43113` (Avalanche testnet)
-- **USDC Address**: `0x5425890298aed601595a70AB815c96711a31Bc65`
-- **Method**: `receiveWithAuthorization` (ERC-3009)
+- **Network**: `eip155:43113` (Avalanche Fuji Testnet)
+- **USDC**: `0x5425890298aed601595a70AB815c96711a31Bc65` (Circle native, 6 decimals)
+- **Method**: ERC-3009 `transferWithAuthorization` (gasless for payer)
+- **Facilitator**: Ultravioleta DAO (`https://facilitator.ultravioletadao.xyz`)
+- **Ref**: https://build.avax.network/integrations/ultravioletadao
+
+## Cross-Chain Content Attestation (Avalanche Teleporter)
+
+After paid video generation, Moltfluence sends a cross-chain attestation via Teleporter:
+
+- **TeleporterMessenger**: `0x253b2784c75e510dD0fF1da844684a1aC0aa5fcf` (all chains)
+- **ContentAttestationSender** (Fuji): `0xef81BE42Ef71F969a9B0594Cfc4Fa22E4E5B954f`
+- **ContentAttestationRegistry** (Fuji): `0xbfe907e883e1f8F47e4f1CE282ec5658f6eb802C`
+- **Verify**: `GET /api/x402/attestation?hash=0x...`
+- **Ref**: https://build.avax.network/docs/cross-chain/teleporter/overview
 
 ## API Surface
 
 ### Free Endpoints
-- `GET /api/x402/info` - Get network & facilitator config
-- `GET /api/state/character` - Load character profile
-- `POST /api/swarm/trends` - Get trending topics
-- `POST /api/swarm/scripts` - Generate scripts
-- `POST /api/swarm/prompt-compile` - Compile LTX-2 prompt
+- `GET /api/x402/info` — Network, facilitator, and contract config
+- `GET /api/x402/quota` — Check usage quota
+- `GET /api/x402/attestation` — Verify cross-chain content attestation
+- `GET /api/state/character` — Load character profile
+- `POST /api/state/character` — Save character profile
+- `POST /api/swarm/trends` — Harvest trending topics
+- `POST /api/swarm/scripts` — Generate scripts
+- `POST /api/swarm/prompt-compile` — Compile video prompt
+- `POST /api/x402/schedule-reel` — Schedule future post
+- `GET /api/x402/schedule-reel` — List scheduled posts
+- `DELETE /api/x402/schedule-reel` — Cancel scheduled post
 
-### Paid Endpoints (Requires x402)
-- `POST /api/x402/generate-image` - $0.015 - Generate persona portrait
-- `POST /api/x402/generate-video` - $0.24 - Generate LTX-2 video (6s)
-- `POST /api/x402/publish-reel` - $0.025 - Publish to Instagram
+### Paid Endpoints (x402)
+- `POST /api/x402/generate-image` — $0.01–$0.05 — AI persona portrait
+- `POST /api/x402/generate-video` — $0.24–$0.40 — LTX-2-fast video (6s/10s)
+- `POST /api/x402/caption-video` — $0.01 — Animated captions
+- `POST /api/x402/publish-reel` — $0.025 — Publish to Instagram
 
 ## Notes
-- Video generation uses **LTX-2** as the primary model.
-- Payments are processed through the **Molandak Facilitator**.
-- The agent wallet is `0xcfe87024817D105AFbbC4D82237BfA45719DBD6c`.
+- Video generation uses **LTX-2-fast** (1920x1080, English audio included).
+- Payments processed via **Ultravioleta DAO** facilitator (Avalanche-native, gasless).
+- Cross-chain attestations delivered via **Avalanche Teleporter** (AWM + BLS multi-signatures).

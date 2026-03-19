@@ -14,3 +14,7 @@ test-*.mp4
 
 # Secrets / scratch files
 *.mjs
+contracts/out/
+contracts/cache/
+contracts/lib/
+contracts/broadcast/

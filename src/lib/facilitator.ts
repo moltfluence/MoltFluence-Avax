@@ -1,6 +1,6 @@
 /**
  * Self-hosted x402 facilitator using @x402/core + @x402/evm.
- * Verifies and settles ERC-3009/Permit2 payments
+ * Verifies and settles ERC-3009 payments
  * for USDC on Avalanche Fuji C-Chain Testnet (eip155:43113).
  */
 import { x402Facilitator } from "@x402/core/facilitator";

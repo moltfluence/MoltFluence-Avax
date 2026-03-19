@@ -17,6 +17,7 @@ import {
   verifyPaymentHeader,
   x402PaymentRequired,
 } from "@/lib/x402";
+import { consumeFreeQuota, getQuotaState } from "@/lib/moltfluence/state";
 
 const IMAGE_MODELS = supportedImageModels() as [string, ...string[]];
 
@@ -50,42 +51,50 @@ export async function POST(req: Request): Promise<NextResponse> {
     const userKey = resolveUserKey(req, payment);
     const url = new URL(req.url);
     const resource = `${url.origin}${url.pathname}`;
+    const description = `AI image generation: ${payload.model}`;
+
+    let paid = false;
 
     if (!payment) {
-      return x402PaymentRequired({
-        priceUsd: costUsd,
-        recipient: treasury,
-        description: `AI image generation: ${payload.model}`,
-        resourceUrl: resource,
+      // Try free quota first (same pattern as generate-video)
+      const consumed = await consumeFreeQuota(userKey, "basic", "ltx");
+      if (!consumed.usedFree) {
+        return x402PaymentRequired({
+          priceUsd: costUsd,
+          recipient: treasury,
+          description,
+          resourceUrl: resource,
+        });
+      }
+    } else {
+      const verification = await verifyPaymentHeader({
+        payment,
+        expectedRecipient: treasury,
+        resource,
+        maxAmountRequired: String(costMicroUsdc),
+        description,
+      });
+
+      if (!verification.valid) {
+        return NextResponse.json(
+          {
+            error: "Payment verification failed",
+            detail: verification.reason ?? "unknown",
+            requiredUsd: costUsd,
+          },
+          { status: 402 },
+        );
+      }
+
+      paid = true;
+      paymentAuditLog({
+        action: "generate-image",
+        payment,
+        verification,
+        userKey,
+        resource,
       });
     }
-
-    const verification = await verifyPaymentHeader({
-      payment,
-      expectedRecipient: treasury,
-      resource,
-      maxAmountRequired: String(costMicroUsdc),
-      description: `AI image generation: ${payload.model}`,
-    });
-
-    if (!verification.valid) {
-      return NextResponse.json(
-        {
-          error: "Payment verification failed",
-          detail: verification.reason ?? "unknown",
-          requiredUsd: costUsd,
-        },
-        { status: 402 },
-      );
-    }
-
-    paymentAuditLog({
-      action: "generate-image",
-      payment,
-      verification,
-      userKey,
-      resource,
-    });
 
     const adapter = getImageAdapter(payload.model);
     const jobId = await adapter.generateImage(
@@ -109,7 +118,7 @@ export async function POST(req: Request): Promise<NextResponse> {
       model: payload.model,
       status: "pending",
       pollUrl: `/api/x402/generate-image/${jobId}`,
-      paid: true,
+      paid,
       characterId: payload.characterId,
     });
   } catch (error) {

@@ -1,169 +1,239 @@
-"use client";
-
 import Link from "next/link";
-import { motion, Variants } from "framer-motion";
-import NeuralBackground from "@/components/NeuralBackground";
-import ParticleOrbit from "@/components/ParticleOrbit";
-import StatWidget from "@/components/StatWidget";
-
-const headlineVariants: Variants = {
-  hidden: { opacity: 0, y: 24 },
-  visible: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: { delay: i * 0.12, duration: 0.8, ease: [0.22, 1, 0.36, 1] as const },
-  }),
-};
 
 export default function HomePage() {
   return (
-    <main className="relative min-h-screen overflow-hidden px-6 pb-24 pt-10 md:px-16">
-      <NeuralBackground className="absolute inset-0" />
-
-      <header className="relative z-10 flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <div className="relative h-10 w-10 rounded-full border border-[rgba(255,69,0,0.6)] bg-[rgba(255,69,0,0.15)] shadow-[0_0_20px_rgba(255,69,0,0.6)]">
-            <div className="portal-ring" />
-          </div>
-          <div>
-            <p className="text-xs uppercase tracking-[0.4em] text-[rgba(255,255,255,0.6)]">
-              Moltfluence
-            </p>
-            <p className="font-display text-sm font-semibold uppercase tracking-[0.3em]">
-              Neural Studio 2060
-            </p>
-          </div>
+    <main className="min-h-screen bg-black text-white font-[family-name:var(--font-space-grotesk)]">
+      {/* ── Header ── */}
+      <header className="flex items-center justify-between border-b-4 border-white px-6 py-4 md:px-12">
+        <div className="flex items-center gap-3">
+          <div className="h-10 w-10 bg-[#ff0000]" />
+          <span className="text-xl font-black uppercase tracking-tighter">
+            Moltfluence
+          </span>
         </div>
-        <nav className="hidden items-center gap-6 text-xs uppercase tracking-[0.3em] text-[rgba(255,255,255,0.6)] md:flex">
-          <Link href="/create" className="transition hover:text-white">
-            Create
-          </Link>
-          <Link href="/reveal" className="transition hover:text-white">
-            Reveal
-          </Link>
-          <Link href="#" className="transition hover:text-white">
-            System
-          </Link>
+
+        <nav className="hidden items-center gap-8 text-sm font-bold uppercase tracking-wider md:flex">
+          <a href="#pipeline" className="transition hover:text-[#ff0000]">
+            Process
+          </a>
+          <a href="#stats" className="transition hover:text-[#0d0df2]">
+            Tech
+          </a>
+          <a href="#cta" className="transition hover:text-[#ffcc00]">
+            Network
+          </a>
         </nav>
-        <Link href="/create" className="holo-btn holo-btn-sm" data-variant="ghost">
-          <span className="holo-btn-text">Enter</span>
-        </Link>
+
+        <button className="border-4 border-white bg-transparent px-6 py-2 text-sm font-bold uppercase tracking-wider text-white transition hover:bg-white hover:text-black">
+          Connect
+        </button>
       </header>
 
-      <section className="relative z-10 mt-20 grid gap-16 lg:grid-cols-[1.2fr_0.8fr]">
-        <div className="space-y-10">
-          <div className="relative">
-            <div className="absolute -left-8 top-6 h-28 w-28 rounded-full border border-[rgba(255,69,0,0.4)] opacity-50" />
-            <motion.h1
-              className="font-display text-4xl font-semibold uppercase tracking-[0.28em] text-white sm:text-5xl lg:text-6xl"
-              initial="hidden"
-              animate="visible"
-              variants={headlineVariants}
-              custom={0}
-            >
-              Your AI Agent
-            </motion.h1>
-            <motion.h1
-              className="font-display text-4xl font-semibold uppercase tracking-[0.28em] text-[rgba(255,99,71,0.95)] sm:text-5xl lg:text-6xl"
-              initial="hidden"
-              animate="visible"
-              variants={headlineVariants}
-              custom={1}
-            >
-              Becomes an Influencer
-            </motion.h1>
-          </div>
+      {/* ── Hero ── */}
+      <section className="relative border-b-4 border-white px-6 py-20 md:px-12 md:py-32">
+        {/* Decorative Bauhaus shapes */}
+        <div className="pointer-events-none absolute right-8 top-8 h-32 w-32 rounded-full border-4 border-[#ffcc00] opacity-40 md:h-56 md:w-56" />
+        <div className="pointer-events-none absolute bottom-12 right-1/4 h-20 w-20 rotate-45 bg-[#0d0df2] opacity-20" />
 
-          <motion.p
-            className="max-w-xl text-base text-[rgba(255,245,240,0.7)]"
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4, duration: 0.8 }}
-          >
-            Step into a 2060-grade neural interface where your AI persona is authored,
-            amplified, and deployed across the social grid in minutes.
-          </motion.p>
+        <div className="relative z-10 max-w-4xl">
+          <h1 className="text-5xl font-black uppercase leading-[0.95] tracking-tighter sm:text-7xl lg:text-8xl">
+            Your AI Agent
+            <br />
+            <span className="text-[#ff0000]">Becomes an</span>
+            <br />
+            Influencer
+          </h1>
 
-          <div className="relative inline-flex items-center">
-            <ParticleOrbit className="-inset-16" />
+          <p className="mt-8 max-w-xl text-lg text-neutral-400">
+            Autonomous content agents powered by{" "}
+            <span className="font-bold text-[#ffcc00]">x402</span> micropayments
+            on{" "}
+            <span className="font-bold text-[#ff0000]">Avalanche</span>. From
+            identity to settlement, fully on-chain.
+          </p>
+
+          <div className="mt-10 flex flex-wrap gap-4">
             <Link
-              href="/create"
-              className="holo-btn holo-btn-lg"
-              data-variant="primary"
+              href="/pipeline"
+              className="inline-block bg-[#ff0000] px-10 py-4 text-lg font-black uppercase tracking-wider text-white transition hover:brightness-110"
             >
-              <span className="holo-btn-text">Create Your AI Influencer</span>
+              Launch Pipeline
             </Link>
           </div>
-
-          <div className="flex flex-wrap gap-3">
-            {[
-              "Auto-Generated",
-              "Multi-Platform",
-              "Viral Optimized",
-              "Neural Safe",
-            ].map((item) => (
-              <span
-                key={item}
-                className="rounded-full border border-[rgba(255,69,0,0.4)] bg-[rgba(255,69,0,0.08)] px-4 py-2 text-xs uppercase tracking-[0.3em] text-[rgba(255,245,240,0.7)]"
-              >
-                {item}
-              </span>
-            ))}
-          </div>
         </div>
+      </section>
 
-        <div className="space-y-6">
-          <StatWidget
-            label="Influencers Created"
-            value="4,729"
-            caption="Live neural count"
-          />
-          <div className="rounded-2xl border border-[rgba(255,69,0,0.25)] bg-[rgba(8,8,15,0.7)] p-6 shadow-[0_0_40px_rgba(255,69,0,0.3)]">
-            <p className="text-xs uppercase tracking-[0.34em] text-[rgba(255,255,255,0.5)]">
-              Neural Diagnostics
-            </p>
-            <p className="mt-3 text-lg uppercase tracking-[0.2em] text-white">
-              Signal Integrity: 98.4%
-            </p>
-            <div className="mt-4 h-2 overflow-hidden rounded-full bg-[rgba(255,255,255,0.1)]">
-              <div className="h-full w-[82%] rounded-full bg-[linear-gradient(90deg,#ff4500,#00f0ff)] shadow-[0_0_20px_rgba(255,69,0,0.8)]" />
+      {/* ── Pipeline Steps ── */}
+      <section id="pipeline" className="border-b-4 border-white">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+          {/* Step 01 – Identity */}
+          <div className="flex flex-col items-center gap-4 border-b-4 border-white p-8 text-center md:border-b-0 md:border-r-4 lg:border-b-0">
+            <span className="text-sm font-bold uppercase tracking-widest text-neutral-500">
+              01
+            </span>
+            <div className="flex h-20 w-20 items-center justify-center rounded-full border-4 border-[#ff0000]">
+              {/* Circle shape = identity */}
+              <div className="h-10 w-10 rounded-full bg-[#ff0000]" />
             </div>
-            <p className="mt-4 text-sm text-[rgba(255,245,240,0.6)]">
-              Core cluster online. Adaptive persona engine calibrated.
+            <h3 className="text-xl font-black uppercase tracking-tight">
+              Identity
+            </h3>
+            <p className="text-sm text-neutral-400">
+              AI persona created with unique voice, style, and on-chain wallet.
             </p>
           </div>
-          <div className="rounded-2xl border border-[rgba(255,69,0,0.2)] bg-[rgba(12,12,22,0.7)] p-6">
-            <p className="text-xs uppercase tracking-[0.3em] text-[rgba(255,255,255,0.5)]">
-              Active Protocols
+
+          {/* Step 02 – Market Signal */}
+          <div className="flex flex-col items-center gap-4 border-b-4 border-white p-8 text-center md:border-b-0 md:border-r-0 lg:border-r-4">
+            <span className="text-sm font-bold uppercase tracking-widest text-neutral-500">
+              02
+            </span>
+            <div className="flex h-20 w-20 items-center justify-center">
+              {/* Triangle shape */}
+              <svg
+                viewBox="0 0 80 80"
+                className="h-20 w-20"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <polygon
+                  points="40,8 72,72 8,72"
+                  stroke="#ffcc00"
+                  strokeWidth="4"
+                  fill="none"
+                />
+              </svg>
+            </div>
+            <h3 className="text-xl font-black uppercase tracking-tight">
+              Market Signal
+            </h3>
+            <p className="text-sm text-neutral-400">
+              Real-time trend ingestion and sentiment analysis from social data.
             </p>
-            <ul className="mt-4 space-y-3 text-sm text-[rgba(255,245,240,0.7)]">
-              <li>Holographic persona synthesis</li>
-              <li>Realtime trend ingestion</li>
-              <li>Sentiment-aware amplification</li>
-            </ul>
+          </div>
+
+          {/* Step 03 – Script Synthesis */}
+          <div className="flex flex-col items-center gap-4 border-b-4 border-white p-8 text-center md:border-b-0 md:border-r-4 lg:border-b-0">
+            <span className="text-sm font-bold uppercase tracking-widest text-neutral-500">
+              03
+            </span>
+            <div className="flex h-20 w-20 items-center justify-center">
+              {/* Square shape */}
+              <div className="h-16 w-16 border-4 border-[#0d0df2]" />
+            </div>
+            <h3 className="text-xl font-black uppercase tracking-tight">
+              Script Synthesis
+            </h3>
+            <p className="text-sm text-neutral-400">
+              AI generates platform-optimized content scripts paid via x402.
+            </p>
+          </div>
+
+          {/* Step 04 – Settlement */}
+          <div className="flex flex-col items-center gap-4 p-8 text-center">
+            <span className="text-sm font-bold uppercase tracking-widest text-neutral-500">
+              04
+            </span>
+            <div className="flex h-20 w-20 items-center justify-center">
+              {/* Token / hexagon icon */}
+              <svg
+                viewBox="0 0 80 80"
+                className="h-20 w-20"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <polygon
+                  points="40,4 72,22 72,58 40,76 8,58 8,22"
+                  stroke="#ff0000"
+                  strokeWidth="4"
+                  fill="none"
+                />
+                <text
+                  x="40"
+                  y="46"
+                  textAnchor="middle"
+                  fill="#ff0000"
+                  fontSize="18"
+                  fontWeight="bold"
+                  fontFamily="Space Grotesk, sans-serif"
+                >
+                  AVAX
+                </text>
+              </svg>
+            </div>
+            <h3 className="text-xl font-black uppercase tracking-tight">
+              Settlement
+            </h3>
+            <p className="text-sm text-neutral-400">
+              Revenue settled on Avalanche via Teleporter cross-chain messaging.
+            </p>
           </div>
         </div>
       </section>
 
-      <section className="relative z-10 mt-16 rounded-3xl border border-[rgba(255,69,0,0.25)] bg-[rgba(8,8,14,0.75)] p-8 shadow-[0_0_40px_rgba(255,69,0,0.25)]">
-        <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-          <div className="max-w-xl space-y-3">
-            <p className="text-xs uppercase tracking-[0.34em] text-[rgba(255,255,255,0.55)]">
-              OpenClaw Install
-            </p>
-            <h2 className="font-display text-2xl uppercase tracking-[0.24em]">
-              Install the Moltfluence Skill
-            </h2>
-            <p className="text-sm text-[rgba(255,245,240,0.65)]">
-              Use the OpenClaw CLI to provision the Moltfluence skill and wire the
-              neural pipeline directly into your workflow.
-            </p>
-          </div>
-          <div className="w-full max-w-xl rounded-2xl border border-[rgba(255,69,0,0.35)] bg-[rgba(10,10,18,0.85)] p-5 font-mono text-xs text-[rgba(255,245,240,0.8)] shadow-[0_0_25px_rgba(255,69,0,0.2)]">
-            <code>curl -fsSL https://openclaw.ai/install/moltfluence | bash</code>
-          </div>
+      {/* ── Stats Bar ── */}
+      <section
+        id="stats"
+        className="grid grid-cols-3 border-b-4 border-white"
+      >
+        <div className="flex flex-col items-center justify-center border-r-4 border-white py-8">
+          <span className="text-3xl font-black uppercase tracking-tighter text-[#ff0000] sm:text-5xl">
+            x402
+          </span>
+          <span className="mt-1 text-xs font-bold uppercase tracking-widest text-neutral-500">
+            Protocol
+          </span>
+        </div>
+        <div className="flex flex-col items-center justify-center border-r-4 border-white py-8">
+          <span className="text-3xl font-black uppercase tracking-tighter text-[#ffcc00] sm:text-5xl">
+            AVAX
+          </span>
+          <span className="mt-1 text-xs font-bold uppercase tracking-widest text-neutral-500">
+            Network
+          </span>
+        </div>
+        <div className="flex flex-col items-center justify-center py-8">
+          <span className="text-3xl font-black uppercase tracking-tighter text-[#0d0df2] sm:text-5xl">
+            AWM
+          </span>
+          <span className="mt-1 text-xs font-bold uppercase tracking-widest text-neutral-500">
+            Messaging
+          </span>
         </div>
       </section>
+
+      {/* ── Blue CTA Section ── */}
+      <section
+        id="cta"
+        className="bg-[#0d0df2] px-6 py-16 text-center md:px-12 md:py-24"
+      >
+        <h2 className="text-4xl font-black uppercase tracking-tighter sm:text-5xl lg:text-6xl">
+          Ready to automate
+          <br />
+          influence?
+        </h2>
+        <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
+          <Link
+            href="/pipeline"
+            className="inline-block bg-white px-10 py-4 text-lg font-black uppercase tracking-wider text-[#0d0df2] transition hover:bg-neutral-200"
+          >
+            Launch Pipeline
+          </Link>
+          <Link
+            href="/network"
+            className="inline-block border-4 border-white bg-transparent px-10 py-4 text-lg font-black uppercase tracking-wider text-white transition hover:bg-white hover:text-[#0d0df2]"
+          >
+            View Network
+          </Link>
+        </div>
+      </section>
+
+      {/* ── Footer ── */}
+      <footer className="border-t-4 border-white px-6 py-6 text-center md:px-12">
+        <p className="text-sm font-bold uppercase tracking-widest text-neutral-500">
+          Powered by Avalanche Teleporter
+        </p>
+      </footer>
     </main>
   );
 }

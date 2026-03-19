@@ -1,6 +1,10 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..900&display=swap');
 
 :root {
+  --bauhaus-red: #ff0000;
+  --bauhaus-yellow: #ffcc00;
+  --bauhaus-blue: #0d0df2;
   --primary-red: #ff4500;
   --primary-red-light: #ff6347;
   --primary-red-dark: #dc143c;

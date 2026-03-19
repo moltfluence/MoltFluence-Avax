@@ -341,6 +341,36 @@ const { success, reelUrl } = await pubRes.json();
 }
 ```
 
+## Cross-Chain Content Attestation (Avalanche Teleporter)
+
+After paid video generation, the server automatically sends a cross-chain content attestation
+via Avalanche Teleporter (AWM). This creates a verifiable proof on a destination Avalanche L1
+that the content was generated and paid for.
+
+The response from `/api/x402/generate-video` includes an `attestation` field when payment was made:
+
+```json
+{
+  "attestation": {
+    "messageID": "0x...",
+    "contentHash": "0x...",
+    "txHash": "0x...",
+    "explorerUrl": "https://testnet.snowtrace.io/tx/0x..."
+  }
+}
+```
+
+To verify any attestation:
+
+```ts
+const verifyRes = await fetch(`${API_BASE}/api/x402/attestation?hash=${attestation.contentHash}`);
+const { attested, attestation: details } = await verifyRes.json();
+// attested = true if cross-chain proof exists
+```
+
+This is powered by Avalanche Warp Messaging (AWM) with BLS multi-signatures from validators.
+Ref: https://build.avax.network/docs/cross-chain/teleporter/overview
+
 ## Guardrails
 - Respect user approval before publishing.
 - Keep each generation deterministic and trackable (job IDs, model used).

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Orbitron } from "next/font/google";
+import { Inter, Orbitron, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import GlobalEffects from "@/components/GlobalEffects";
 
@@ -14,6 +14,12 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
+const spaceGrotesk = Space_Grotesk({
+  variable: "--font-space-grotesk",
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+});
+
 export const metadata: Metadata = {
   title: "Moltfluence — Neural Studio 2060",
   description: "Futuristic AI influencer creation platform interface.",
@@ -26,7 +32,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${orbitron.variable} ${inter.variable} antialiased`}>
+      <body className={`${orbitron.variable} ${inter.variable} ${spaceGrotesk.variable} antialiased`}>
         <div className="app-shell">
           <GlobalEffects />
           {children}

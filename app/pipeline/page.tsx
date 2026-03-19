@@ -2,12 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import NeuralBackground from "@/components/NeuralBackground";
-import ScanlineCard from "@/components/ScanlineCard";
-import HolographicButton from "@/components/HolographicButton";
-import Stepper from "@/components/Stepper";
 
-const API_BASE = ""; 
+const API_BASE = "";
 
 type CharacterProfile = {
   id: string;
@@ -17,13 +13,18 @@ type CharacterProfile = {
   characterType: string;
   imageUrl?: string;
   imagePrompt?: string;
+  role?: string;
+  language?: string;
+  aggressiveness?: string;
+  styleGuide?: string;
+  exclusions?: string[];
 };
 
 type Topic = {
   id: string;
   title: string;
-  angle: string;
-  engagementScore: number;
+  angle?: string;
+  engagementScore?: number;
 };
 
 type Script = {
@@ -32,6 +33,7 @@ type Script = {
   hook: string;
   body: string;
   cta: string;
+  durationTargetSec?: number;
 };
 
 export default function PipelinePage() {
@@ -73,18 +75,18 @@ export default function PipelinePage() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Creation failed");
-      
+
       const profile = data.profile;
-      
+
       // Auto-trigger portrait
       setLoading("Visualizing Persona...");
       const imgRes = await fetch(`${API_BASE}/api/x402/generate-image`, {
         method: "POST",
-        headers: { "Content-Type": "application/json", "x-bypass-payment": "true" },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ prompt: profile.imagePrompt, characterId: profile.id }),
       });
       const imgData = await imgRes.json();
-      
+
       if (imgData.error) throw new Error(imgData.error);
 
       // Poll for image
@@ -106,7 +108,7 @@ export default function PipelinePage() {
         } catch (e) {
           console.error("Polling error", e);
         }
-        
+
         if (++attempts > 30) {
           clearInterval(poll);
           setCharacter({ ...profile, name: charName });
@@ -169,8 +171,8 @@ export default function PipelinePage() {
       const res = await fetch(`${API_BASE}/api/swarm/prompt-compile`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          profile: character, 
+        body: JSON.stringify({
+          profile: character,
           brief: {
             id: `brief-${Date.now()}`,
             userKey: "web-ui",
@@ -179,7 +181,7 @@ export default function PipelinePage() {
             topic: selectedTopic,
             createdAt: new Date().toISOString()
           },
-          script 
+          script
         }),
       });
       const data = await res.json();
@@ -385,45 +387,97 @@ export default function PipelinePage() {
     }
   };
 
+  const scriptAccentColors = ["border-l-[#ff3b30]", "border-l-[#0d0df2]", "border-l-[#ffcc00]"];
+  const scriptTypeLabels = ["Hot Take", "Breakdown", "Story"];
+  const scriptTypeDotColors = ["bg-[#ff3b30]", "bg-[#0d0df2]", "bg-[#ffcc00]"];
+  const scriptBtnColors = [
+    "bg-[#ff3b30] hover:bg-red-700 text-white",
+    "bg-[#0d0df2] hover:bg-blue-800 text-white",
+    "bg-[#ffcc00] hover:bg-yellow-500 text-[#101022]",
+  ];
+
   return (
-    <main className="relative min-h-screen bg-[#050505] text-white p-6 md:p-12 overflow-x-hidden">
-      <NeuralBackground className="opacity-30" />
-      
-      <div className="relative z-10 max-w-5xl mx-auto">
-        <header className="mb-12 flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div>
-            <h1 className="text-3xl font-display uppercase tracking-widest text-primary shadow-primary/20 drop-shadow-2xl">
-              Moltfluence Pipeline
-            </h1>
-            <p className="text-white/40 text-xs uppercase tracking-[0.4em] mt-2">
-              Autonomous Creator Engine // Avalanche Build Games
-            </p>
+    <main
+      className="relative min-h-screen text-slate-100 overflow-x-hidden"
+      style={{
+        fontFamily: "var(--font-space-grotesk), 'Space Grotesk', sans-serif",
+        background: "#101022",
+        backgroundImage: "radial-gradient(circle, #222249 1px, transparent 1px)",
+        backgroundSize: "40px 40px",
+      }}
+    >
+      <div className="relative z-10 max-w-[1200px] mx-auto w-full">
+        {/* Header */}
+        <header className="flex items-center justify-between border-b-4 border-slate-800 px-6 py-6">
+          <div className="flex items-center gap-4">
+            <div className="w-8 h-8 bg-[#0d0df2] flex items-center justify-center">
+              <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+              </svg>
+            </div>
+            <h1 className="text-2xl font-black uppercase tracking-tighter">Moltfluence Pipeline</h1>
           </div>
-          <Stepper current={step} total={steps.length} labels={steps} />
+          <div className="flex gap-2">
+            <div className="w-8 h-8 bg-[#ff3b30]" />
+            <div className="w-8 h-8 bg-[#ffcc00] rounded-full" />
+            <div className="w-8 h-8 bg-[#0d0df2]" style={{ clipPath: "polygon(50% 0%, 0% 100%, 100% 100%)" }} />
+          </div>
         </header>
 
+        {/* Bauhaus Step Indicator */}
+        <nav className="grid grid-cols-4 border-b-4 border-slate-800">
+          {steps.map((label, i) => {
+            const stepNum = i + 1;
+            const isActive = step === stepNum;
+            const isCompleted = step > stepNum;
+            return (
+              <div
+                key={label}
+                className={`flex flex-col items-center justify-center py-4 border-r border-slate-800 last:border-r-0 transition-colors ${
+                  isActive
+                    ? "bg-[#0d0df2] text-white"
+                    : isCompleted
+                    ? "bg-white/10 text-white"
+                    : "bg-white/5"
+                }`}
+              >
+                <span className={`text-[10px] uppercase font-bold tracking-widest ${isActive || isCompleted ? "opacity-70" : "opacity-40"}`}>
+                  Step {String(stepNum).padStart(2, "0")}
+                </span>
+                <p className={`text-sm font-black uppercase ${isActive || isCompleted ? "" : "opacity-40"}`}>
+                  {label}
+                </p>
+              </div>
+            );
+          })}
+        </nav>
+
+        {/* Error Banner */}
         {error && (
-          <div className="mb-8 p-4 bg-red-500/10 border border-red-500/50 rounded-xl text-red-400 text-sm animate-pulse">
+          <div className="mx-6 mt-6 p-4 bg-[#ff3b30]/10 border-4 border-[#ff3b30] text-[#ff3b30] text-sm font-bold uppercase tracking-wider">
             ERR_SIG_INT: {error}
           </div>
         )}
 
+        {/* Content */}
         <AnimatePresence mode="wait">
           {loading ? (
-            <motion.div 
+            <motion.div
               key="loading"
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
               className="h-[400px] flex flex-col items-center justify-center space-y-6"
             >
               <div className="relative h-24 w-24">
-                <div className="absolute inset-0 border-4 border-primary/20 rounded-full" />
-                <motion.div 
-                  className="absolute inset-0 border-4 border-t-primary rounded-full"
+                <div className="absolute inset-0 border-4 border-[#0d0df2]/20" />
+                <motion.div
+                  className="absolute inset-0 border-4 border-t-[#0d0df2] border-r-transparent border-b-transparent border-l-transparent"
                   animate={{ rotate: 360 }}
                   transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
                 />
               </div>
-              <p className="text-primary font-mono text-sm tracking-widest animate-pulse uppercase">
+              <p className="text-[#0d0df2] font-black text-sm tracking-[0.3em] uppercase">
                 {loading}
               </p>
             </motion.div>
@@ -433,207 +487,357 @@ export default function PipelinePage() {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
-              className="grid gap-8"
             >
+              {/* ═══════════════════════ STEP 1: IDENTITY ═══════════════════════ */}
               {step === 1 && (
-                <div className="grid lg:grid-cols-2 gap-12">
-                  <div className="space-y-8">
-                    <h2 className="text-2xl font-display uppercase tracking-wider text-white/90">Identity Architecture</h2>
-                    <div className="space-y-4">
-                      <div className="space-y-2">
-                        <label className="text-[10px] uppercase tracking-[0.3em] text-white/40">Persona Name</label>
-                        <input 
-                          className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:border-primary/50 outline-none transition"
-                          placeholder="e.g. Luna Highwire"
+                <div className="grid grid-cols-1 md:grid-cols-12 min-h-[calc(100vh-180px)] border-x border-slate-800">
+                  {/* Left Column: Form */}
+                  <section className="md:col-span-5 p-8 border-r-4 border-slate-800 flex flex-col gap-8 bg-white/5">
+                    <div>
+                      <h2 className="text-3xl font-black uppercase leading-none mb-2 italic">Define Persona</h2>
+                      <div className="w-16 h-2 bg-[#ff3b30] mb-8" />
+                    </div>
+                    <div className="flex flex-col gap-6">
+                      <div className="flex flex-col gap-2">
+                        <label className="text-[10px] uppercase font-black tracking-widest text-[#0d0df2]">
+                          Persona Name
+                        </label>
+                        <input
+                          className="bg-transparent border-2 border-slate-700 p-3 font-bold focus:border-[#0d0df2] focus:ring-0 outline-none uppercase text-sm text-slate-100"
+                          placeholder="ENTER NAME..."
+                          type="text"
                           value={charName}
                           onChange={(e) => setCharName(e.target.value)}
                         />
                       </div>
-                      <div className="space-y-2">
-                        <label className="text-[10px] uppercase tracking-[0.3em] text-white/40">Core Directive (Bio)</label>
-                        <textarea 
-                          className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:border-primary/50 outline-none transition h-32"
-                          placeholder="A high-stakes trader living in the Avalanche neon districts..."
+                      <div className="flex flex-col gap-2">
+                        <label className="text-[10px] uppercase font-black tracking-widest text-[#0d0df2]">
+                          Core Directive (Bio)
+                        </label>
+                        <textarea
+                          className="bg-transparent border-2 border-slate-700 p-3 font-bold focus:border-[#0d0df2] focus:ring-0 outline-none uppercase text-sm resize-none text-slate-100"
+                          placeholder="DEFINE PURPOSE..."
+                          rows={4}
                           value={charBio}
                           onChange={(e) => setCharBio(e.target.value)}
                         />
                       </div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <label className="text-[10px] uppercase tracking-[0.3em] text-white/40">Market Niche</label>
-                          <select 
-                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:border-primary/50 outline-none"
+                      <div className="grid grid-cols-1 gap-6">
+                        <div className="flex flex-col gap-2">
+                          <label className="text-[10px] uppercase font-black tracking-widest text-[#0d0df2]">
+                            Market Niche
+                          </label>
+                          <select
+                            className="bg-transparent border-2 border-slate-700 p-3 font-bold focus:border-[#0d0df2] focus:ring-0 outline-none uppercase text-sm appearance-none text-slate-100"
                             value={niche}
                             onChange={(e) => setNiche(e.target.value)}
                           >
-                            <option value="crypto">Avalanche Ecosystem</option>
-                            <option value="tech">AI Infrastucture</option>
-                            <option value="lifestyle">Neon Future</option>
+                            <option value="crypto" className="bg-[#101022]">Avalanche Ecosystem</option>
+                            <option value="tech" className="bg-[#101022]">AI Infrastructure</option>
+                            <option value="lifestyle" className="bg-[#101022]">Neon Future</option>
                           </select>
                         </div>
-                        <div className="space-y-2">
-                          <label className="text-[10px] uppercase tracking-[0.3em] text-white/40">Vibe Signature</label>
-                          <select 
-                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:border-primary/50 outline-none"
+                        <div className="flex flex-col gap-2">
+                          <label className="text-[10px] uppercase font-black tracking-widest text-[#0d0df2]">
+                            Vibe Signature
+                          </label>
+                          <select
+                            className="bg-transparent border-2 border-slate-700 p-3 font-bold focus:border-[#0d0df2] focus:ring-0 outline-none uppercase text-sm text-slate-100"
                             value={vibe}
                             onChange={(e) => setVibe(e.target.value)}
                           >
-                            <option value="confident">Alpha Confident</option>
-                            <option value="chaotic">Degen Chaotic</option>
-                            <option value="calm">Zen Architect</option>
+                            <option value="confident" className="bg-[#101022]">Alpha Confident</option>
+                            <option value="chaotic" className="bg-[#101022]">Degen Chaotic</option>
+                            <option value="calm" className="bg-[#101022]">Zen Architect</option>
                           </select>
                         </div>
                       </div>
+                      <button
+                        className="mt-4 bg-[#ff3b30] text-white py-5 px-8 font-black uppercase text-xl hover:bg-red-700 transition-colors flex items-center justify-between group disabled:opacity-50 disabled:cursor-not-allowed"
+                        onClick={handleCreateIdentity}
+                        disabled={!charName || !charBio}
+                      >
+                        Initialize Identity
+                        <span className="group-hover:translate-x-2 transition-transform text-2xl">&#8594;</span>
+                      </button>
                     </div>
-                    <HolographicButton 
-                      className="w-full py-4" 
-                      onClick={handleCreateIdentity}
-                      disabled={!charName || !charBio}
-                    >
-                      Initialize Identity NFT
-                    </HolographicButton>
-                  </div>
-                  <div className="hidden lg:block relative">
-                    <div className="absolute inset-0 bg-primary/5 blur-3xl rounded-full animate-pulse" />
-                    <div className="h-full flex items-center justify-center border border-white/5 bg-white/[0.02] rounded-3xl p-12 text-center">
-                       <p className="text-white/20 text-[10px] uppercase tracking-[0.5em]">
-                         Awaiting identity parameters for visualization
-                       </p>
+                  </section>
+
+                  {/* Right Column: Visualization Placeholder */}
+                  <section className="md:col-span-7 p-12 flex flex-col items-center justify-center relative overflow-hidden">
+                    {/* Decorative Bauhaus Elements */}
+                    <div className="absolute top-10 right-10 w-32 h-32 border-4 border-[#ffcc00] rounded-full opacity-20" />
+                    <div
+                      className="absolute bottom-20 left-10 w-24 h-24 bg-[#0d0df2] opacity-10"
+                      style={{ clipPath: "polygon(50% 0%, 0% 100%, 100% 100%)" }}
+                    />
+                    {/* Main Placeholder Card */}
+                    <div className="relative w-full max-w-md aspect-[3/4] border-4 border-slate-100 p-2 bg-slate-900/10 backdrop-blur-sm flex flex-col">
+                      <div className="flex-1 border-2 border-dashed border-slate-100/30 flex flex-col items-center justify-center p-12 text-center gap-6">
+                        <div className="w-20 h-20 border-4 border-[#0d0df2] rounded-full flex items-center justify-center animate-pulse">
+                          <svg className="w-10 h-10 text-[#0d0df2]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                          </svg>
+                        </div>
+                        <div>
+                          <p className="text-xl font-black uppercase leading-tight tracking-tighter">
+                            Awaiting identity parameters for visualization
+                          </p>
+                          <p className="text-[10px] uppercase font-bold tracking-widest mt-4 opacity-50">
+                            Neural synthesis pending...
+                          </p>
+                        </div>
+                      </div>
+                      {/* Bottom geometric accent */}
+                      <div className="h-16 flex border-t-2 border-slate-100">
+                        <div className="flex-1 bg-[#0d0df2]" />
+                        <div className="flex-1 bg-[#ff3b30]" />
+                        <div className="flex-1 bg-[#ffcc00]" />
+                      </div>
                     </div>
-                  </div>
+                    {/* Metadata Overlay */}
+                    <div className="absolute bottom-8 right-8 text-right hidden lg:block">
+                      <p className="text-[10px] font-black uppercase tracking-widest opacity-30">Render Engine: Bauhaus v4.0</p>
+                      <p className="text-[10px] font-black uppercase tracking-widest opacity-30">Status: Idle</p>
+                    </div>
+                  </section>
                 </div>
               )}
 
+              {/* ═══════════════════════ STEP 2: MARKET SIGNAL ═══════════════════════ */}
               {step === 2 && (
-                <div className="space-y-8">
-                  <div className="flex items-center gap-6 p-6 bg-white/5 border border-white/10 rounded-2xl">
-                    <div className="relative w-24 h-24">
-                      {character?.imageUrl ? (
-                         <img src={character.imageUrl} className="w-full h-full rounded-xl object-cover border border-primary/30 shadow-[0_0_20px_rgba(255,69,0,0.2)]" alt="Character" />
-                      ) : (
-                         <div className="w-full h-full rounded-xl bg-white/5 flex items-center justify-center text-white/10 text-xs">NO_IMG</div>
-                      )}
+                <div className="p-6 flex flex-col gap-8">
+                  {/* Persona Card */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border-4 border-white">
+                    <div className="bg-[#ff3b30] p-6 flex items-center justify-center border-b-4 md:border-b-0 md:border-r-4 border-white">
+                      <div className="w-32 h-32 border-4 border-white overflow-hidden bg-slate-200">
+                        {character?.imageUrl ? (
+                          <img
+                            src={character.imageUrl}
+                            className="w-full h-full object-cover grayscale contrast-125"
+                            alt="Character"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-slate-800 flex items-center justify-center text-white/30 text-xs font-bold uppercase">
+                            NO_IMG
+                          </div>
+                        )}
+                      </div>
                     </div>
-                    <div>
-                      <h2 className="text-xl font-display uppercase text-primary tracking-widest">{character?.name}</h2>
-                      <p className="text-white/40 text-[10px] tracking-[0.3em] uppercase mt-1">{character?.vibe} // {character?.niche}</p>
+                    <div className="md:col-span-2 bg-slate-900/50 p-8 flex flex-col justify-center gap-4">
+                      <div>
+                        <span className="text-xs font-bold bg-white text-slate-900 px-2 py-1 uppercase tracking-widest">
+                          Persona Profile
+                        </span>
+                        <h2 className="text-4xl font-black uppercase mt-2">{character?.name}</h2>
+                      </div>
+                      <div className="flex flex-wrap gap-4">
+                        <span className="flex items-center gap-2 border-2 border-white px-3 py-1 font-bold uppercase text-sm">
+                          <div className="w-3 h-3 bg-[#0d0df2] rounded-full" /> {character?.niche}
+                        </span>
+                        <span className="flex items-center gap-2 border-2 border-white px-3 py-1 font-bold uppercase text-sm">
+                          <div className="w-3 h-3 bg-[#ffcc00]" /> {character?.vibe}
+                        </span>
+                      </div>
                     </div>
                   </div>
-                  <div className="grid gap-4">
-                    <h3 className="text-[10px] uppercase tracking-[0.4em] text-white/40 px-2">Select Live Market Signal</h3>
-                    <div className="grid md:grid-cols-2 gap-4">
-                      {topics.map((t: any, i) => (
-                        <ScanlineCard 
-                          key={t.id || `topic-${i}`} 
-                          title={typeof t === "string" ? t : t.title}
-                          description={typeof t === "string" ? "Trending topic in your niche" : t.angle}
-                          accent="cyan"
-                          onClick={() => selectTopic(typeof t === "string" ? t : t.title)}
-                        />
-                      ))}
+
+                  {/* Topic Grid */}
+                  <section>
+                    <h3 className="text-2xl font-black uppercase mb-6 bg-[#ffcc00] text-slate-900 inline-block px-4 py-1 border-2 border-slate-900">
+                      Topic Matrix
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {topics.map((t: any, i) => {
+                        const topicTitle = typeof t === "string" ? t : t.title;
+                        const topicAngle = typeof t === "string" ? "Trending topic in your niche" : t.angle;
+                        const engScore = typeof t === "string" ? 75 : (t.engagementScore || 75);
+                        const colorVariants = [
+                          "hover:bg-[#0d0df2] hover:text-white",
+                          "hover:bg-[#ff3b30] hover:text-white",
+                          "hover:bg-[#ffcc00] hover:text-slate-900",
+                        ];
+                        const barColors = ["bg-[#ffcc00]", "bg-[#0d0df2]", "bg-[#ff3b30]"];
+                        const boxColors = ["bg-[#ff3b30]", "bg-[#ffcc00]", "bg-[#0d0df2]"];
+                        return (
+                          <div
+                            key={t.id || `topic-${i}`}
+                            className={`group cursor-pointer border-4 border-white bg-slate-800 ${colorVariants[i % 3]} transition-colors flex flex-col`}
+                            onClick={() => selectTopic(topicTitle)}
+                          >
+                            <div className="p-6 flex flex-col grow gap-4">
+                              <div className={`w-12 h-12 border-4 border-white ${boxColors[i % 3]} group-hover:bg-white`} />
+                              <h4 className="text-xl font-bold uppercase leading-tight">{topicTitle}</h4>
+                              <p className="text-sm font-medium opacity-80">{topicAngle}</p>
+                            </div>
+                            <div className="mt-auto p-6 pt-0">
+                              <div className="flex justify-between items-center mb-2">
+                                <span className="text-xs font-bold uppercase">Engagement</span>
+                                <span className="text-xs font-black">{engScore}%</span>
+                              </div>
+                              <div className="h-3 w-full bg-slate-700 border-2 border-white">
+                                <div
+                                  className={`h-full ${barColors[i % 3]}`}
+                                  style={{ width: `${engScore}%` }}
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
-                  </div>
-                  <button 
-                      className="text-white/20 uppercase text-[10px] tracking-widest hover:text-primary transition mx-auto block mt-8"
+                  </section>
+
+                  {/* Back nav */}
+                  <footer className="mt-8 flex flex-col items-center gap-6 pb-12">
+                    <button
+                      className="text-sm font-bold uppercase tracking-widest hover:text-[#0d0df2] transition-colors flex items-center gap-2 text-slate-400"
                       onClick={() => setStep(1)}
                     >
-                      Return to Identity
+                      &#8592; Return to Identity
                     </button>
+                  </footer>
                 </div>
               )}
 
+              {/* ═══════════════════════ STEP 3: SCRIPT SYNTHESIS ═══════════════════════ */}
               {step === 3 && (
-                <div className="space-y-8">
-                   <div className="flex justify-between items-end">
-                      <h2 className="text-2xl font-display uppercase tracking-wider text-primary">Script Synthesis</h2>
-                      <span className="text-[10px] text-white/40 uppercase tracking-widest pb-1">Topic: {selectedTopic.substring(0, 30)}...</span>
-                   </div>
-                   <div className="grid gap-6">
+                <div className="flex-1 flex flex-col max-w-4xl mx-auto w-full px-6 py-12">
+                  {/* Page Title */}
+                  <div className="mb-10 border-l-4 border-[#0d0df2] pl-6">
+                    <h1 className="text-5xl md:text-6xl font-bold leading-none tracking-tighter mb-2 italic uppercase">
+                      Script Synthesis
+                    </h1>
+                    <p className="text-slate-400 text-lg">
+                      Synthesizing content for:{" "}
+                      <span className="text-slate-100 font-medium">
+                        {selectedTopic.length > 40 ? selectedTopic.substring(0, 40) + "..." : selectedTopic}
+                      </span>
+                    </p>
+                  </div>
+
+                  {/* Script Cards */}
+                  <div className="flex flex-col gap-6">
                     {scripts.map((s, i) => (
-                      <div key={i} className="p-8 bg-white/5 border border-white/10 rounded-3xl relative overflow-hidden group hover:border-primary/20 transition-all">
-                        <div className="absolute top-0 left-0 w-1 h-full bg-primary/40 group-hover:bg-primary transition-colors" />
-                        <div className="grid md:grid-cols-[1fr_200px] gap-8">
-                          <div className="space-y-6">
-                            <div className="space-y-2">
-                              <span className="text-[10px] uppercase text-primary tracking-widest font-mono">Hook</span>
-                              <p className="text-sm text-white/90 italic font-medium leading-relaxed">"{s.hook}"</p>
-                            </div>
-                            <div className="space-y-2">
-                              <span className="text-[10px] uppercase text-white/40 tracking-widest font-mono">Core Content</span>
-                              <p className="text-xs text-white/60 leading-relaxed font-light">{s.body}</p>
-                            </div>
+                      <div
+                        key={i}
+                        className={`group flex flex-col md:flex-row items-stretch border border-slate-800 bg-slate-900/40 backdrop-blur-sm overflow-hidden transition-all border-l-[12px] ${scriptAccentColors[i % 3]}`}
+                      >
+                        <div className="p-8 flex-1 flex flex-col justify-center">
+                          <div className="flex items-center gap-2 mb-4">
+                            <span className={`h-2 w-2 ${scriptTypeDotColors[i % 3]}`} />
+                            <span className="font-bold text-xs uppercase tracking-widest" style={{ color: i % 3 === 0 ? "#ff3b30" : i % 3 === 1 ? "#0d0df2" : "#ffcc00" }}>
+                              Script Type: {scriptTypeLabels[i % 3]}
+                            </span>
                           </div>
-                          <div className="flex flex-col justify-center">
-                            <HolographicButton className="w-full py-3 text-[10px] uppercase tracking-widest" onClick={() => compileVideo(s)}>
-                              Utilize This Script
-                            </HolographicButton>
-                          </div>
+                          <p className="text-xl md:text-2xl italic font-light mb-4 leading-snug">
+                            &ldquo;{s.hook}&rdquo;
+                          </p>
+                          <p className="text-slate-400 text-sm">{s.body}</p>
+                        </div>
+                        <div className="flex items-center p-8 bg-slate-800/50">
+                          <button
+                            className={`${scriptBtnColors[i % 3]} font-bold py-4 px-8 flex items-center gap-3 transition-transform active:scale-95 uppercase`}
+                            onClick={() => compileVideo(s)}
+                          >
+                            Utilize This Script
+                          </button>
                         </div>
                       </div>
                     ))}
-                   </div>
-                   <button 
-                      className="text-white/20 uppercase text-[10px] tracking-widest hover:text-primary transition mx-auto block"
+                  </div>
+
+                  {/* Footer Navigation */}
+                  <div className="mt-16 flex justify-between items-center pt-8 border-t border-slate-800">
+                    <button
+                      className="flex items-center gap-2 text-slate-400 hover:text-[#0d0df2] transition-colors font-medium uppercase text-sm"
                       onClick={() => setStep(2)}
                     >
-                      Return to Market
+                      &#8592; Return to Market
                     </button>
+                  </div>
                 </div>
               )}
 
+              {/* ═══════════════════════ STEP 4: SYNTHESIS & SETTLEMENT ═══════════════════════ */}
               {step === 4 && (
-                <div className="max-w-2xl mx-auto space-y-12 text-center py-8">
-                  <div className="space-y-4">
-                    <motion.div 
+                <div className="max-w-3xl mx-auto py-12 px-6 flex flex-col gap-10">
+                  {/* Header */}
+                  <div className="text-center">
+                    <motion.div
                       initial={{ scale: 0.8, opacity: 0 }}
                       animate={{ scale: 1, opacity: 1 }}
-                      className="h-24 w-24 bg-primary/20 rounded-full flex items-center justify-center mx-auto border border-primary/50 shadow-[0_0_50px_rgba(255,69,0,0.2)]"
+                      className="w-24 h-24 border-4 border-[#0d0df2] mx-auto mb-6 flex items-center justify-center"
                     >
-                       <span className="text-3xl">🎬</span>
+                      <svg className="w-12 h-12 text-[#0d0df2]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                      </svg>
                     </motion.div>
-                    <h2 className="text-3xl font-display uppercase tracking-[0.2em]">Synthesis Ready</h2>
-                    <p className="text-white/40 text-xs tracking-[0.4em] uppercase">Agent ID 8004 // Ready for Avalanche C-Chain</p>
+                    <h2 className="text-5xl font-black uppercase tracking-tighter">Synthesis Ready</h2>
+                    <p className="text-slate-400 text-xs tracking-[0.4em] uppercase mt-2 font-bold">
+                      Agent ID 8004 // Ready for Avalanche C-Chain
+                    </p>
                   </div>
-                  
-                  <div className="p-10 bg-black border border-primary/20 rounded-[2.5rem] relative overflow-hidden shadow-2xl">
-                    <div className="absolute inset-0 bg-primary/5 scanline" />
-                    <div className="relative z-10 space-y-6 text-left">
-                       <div className="flex justify-between items-center border-b border-white/5 pb-4">
-                          <h3 className="text-[10px] uppercase tracking-[0.5em] text-primary font-bold">Neural Prompt Payload</h3>
-                          <span className="text-[9px] text-white/20 font-mono">MODEL: LTX-2-FAST</span>
-                       </div>
-                       <p className="text-[11px] text-white/80 font-mono leading-relaxed p-6 bg-white/5 rounded-2xl border border-white/5">
+
+                  {/* Neural Prompt Payload */}
+                  <div className="border-4 border-white p-0 overflow-hidden">
+                    <div className="flex justify-between items-center border-b-2 border-white px-6 py-4 bg-white/5">
+                      <h3 className="text-[10px] uppercase tracking-[0.5em] text-[#0d0df2] font-black">Neural Prompt Payload</h3>
+                      <span className="text-[9px] text-slate-500 font-mono uppercase">MODEL: LTX-2-FAST</span>
+                    </div>
+                    <div className="p-6 bg-black/50">
+                      <p className="text-[11px] text-slate-300 font-mono leading-relaxed p-4 bg-white/5 border-2 border-slate-700">
                         {compiledPrompt}
-                       </p>
+                      </p>
                     </div>
                   </div>
 
-                  <div className="space-y-8">
-                    <div className="space-y-2">
-                       <p className="text-[10px] text-primary uppercase tracking-[0.3em] font-bold">
-                         Deployment Cost: $0.24 USDC
-                       </p>
-                       <p className="text-[9px] text-white/20 uppercase tracking-[0.2em]">
-                         Triggers ERC-3009 Gasless Micropayment on Avalanche Fuji Testnet
-                       </p>
+                  {/* Cost & CTA */}
+                  <div className="flex flex-col items-center gap-6">
+                    <div className="text-center">
+                      <p className="text-2xl font-black text-[#ff3b30] uppercase tracking-wider">
+                        $0.24 USDC
+                      </p>
+                      <p className="text-[10px] text-slate-500 uppercase tracking-[0.2em] font-bold mt-1">
+                        ERC-3009 Gasless Micropayment on Avalanche Fuji Testnet
+                      </p>
                     </div>
-                    
-                    <HolographicButton 
-                      className="w-full py-6 text-xl tracking-[0.2em]" 
+
+                    <button
+                      className="w-full bg-[#ff3b30] text-white py-6 px-8 font-black uppercase text-xl hover:bg-red-700 transition-colors tracking-wider"
                       onClick={executeVideoGeneration}
                     >
-                      PROCEED TO SOCIAL GRID
-                    </HolographicButton>
-                    
-                    <div className="flex justify-center gap-8">
-                      <button 
-                        className="text-white/20 uppercase text-[10px] tracking-widest hover:text-primary transition"
+                      Proceed to Settlement
+                    </button>
+
+                    {/* Cross-chain attestation info */}
+                    <div className="w-full border-4 border-slate-800 p-6 flex items-center gap-4">
+                      <div className="w-12 h-12 bg-[#0d0df2] flex items-center justify-center flex-shrink-0">
+                        <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                      </div>
+                      <div>
+                        <p className="text-xs font-black uppercase tracking-widest text-[#0d0df2]">
+                          Avalanche Teleporter
+                        </p>
+                        <p className="text-[10px] text-slate-500 uppercase tracking-wider mt-1">
+                          Cross-chain attestation via Avalanche Warp Messaging (AWM)
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Navigation */}
+                    <div className="flex justify-center gap-8 pt-4">
+                      <button
+                        className="text-slate-400 uppercase text-sm tracking-widest hover:text-[#0d0df2] transition font-bold"
                         onClick={() => setStep(1)}
                       >
                         Reset Pipeline
                       </button>
-                      <button 
-                        className="text-white/20 uppercase text-[10px] tracking-widest hover:text-primary transition"
+                      <button
+                        className="text-slate-400 uppercase text-sm tracking-widest hover:text-[#0d0df2] transition font-bold"
                         onClick={() => setStep(3)}
                       >
                         Back to Script
@@ -645,6 +849,18 @@ export default function PipelinePage() {
             </motion.div>
           )}
         </AnimatePresence>
+
+        {/* Footer */}
+        <footer className="border-t-4 border-slate-800 p-4 flex justify-between items-center text-[10px] font-black uppercase tracking-[0.2em]">
+          <div className="flex gap-8">
+            <span className="text-[#0d0df2]">System: Online</span>
+            <span className="text-[#ff3b30]">Pipeline: Step {String(step).padStart(2, "0")}</span>
+          </div>
+          <div className="flex gap-4 items-center">
+            <span className="opacity-40">Avalanche Build Games</span>
+            <div className="w-2 h-2 bg-[#ffcc00] rounded-full" />
+          </div>
+        </footer>
       </div>
     </main>
   );

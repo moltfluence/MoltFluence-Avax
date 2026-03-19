@@ -58,7 +58,7 @@ Autonomous AI influencer agent on Avalanche. User defines character in 60s, agen
 
 - **Frontend:** Next.js 14, Tailwind v4, React 18
 - **Chain:** Avalanche (EVM, Chain ID 43113/43114)
-- **Payments:** x402 v2, USDT, EIP-3009
+- **Payments:** x402 v2, USDC, EIP-3009
 - **Video:** Hailuo v2.3, Kling v2.6
 - **AI:** GPT-4o (character + scripts), trend APIs
 - **Distribution:** Instagram Graph API

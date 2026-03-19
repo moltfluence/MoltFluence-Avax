@@ -19,7 +19,7 @@ Content creation is currently a high-friction, capital-intensive process. Managi
 **Core Stack:**
 - **Frontend/Orchestration:** Next.js 14, React 18, Tailwind v4
 - **Blockchain:** Avalanche Fuji C-Chain Testnet (`eip155:43113`)
-- **Payments:** x402 v2 Protocol, ERC-3009 (Permit2 equivalent), Native Circle USDC
+- **Payments:** x402 v2 Protocol, ERC-3009 transferWithAuthorization (gasless), Native Circle USDC
 - **AI Models:** Groq (Llama-3.3-70b) for LLM Swarm, PiAPI / LTX-2 for Video Generation
 - **Agent Identity:** ERC-8004 Schema (On-chain Agent Registry)
 

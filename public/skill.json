@@ -1,29 +1,41 @@
 {
   "name": "moltfluence",
-  "version": "2.0.0",
-  "description": "Autonomous AI Influencer Pipeline on Avalanche",
-  "homepage": "https://moltfluence.vercel.app",
-  "entrypoint": "https://moltfluence.vercel.app/skill.md",
+  "version": "3.0.0",
+  "description": "Autonomous AI Influencer Pipeline on Avalanche with cross-chain content attestation via Teleporter (AWM)",
+  "homepage": "https://moltfluence-avax.vercel.app",
+  "entrypoint": "https://moltfluence-avax.vercel.app/skill.md",
   "skills": [
     {
       "name": "moltfluence-character",
-      "url": "https://moltfluence.vercel.app/api/skills/moltfluence-character"
+      "url": "https://moltfluence-avax.vercel.app/api/skills/moltfluence-character"
     },
     {
       "name": "moltfluence-content-research",
-      "url": "https://moltfluence.vercel.app/api/skills/moltfluence-content-research"
+      "url": "https://moltfluence-avax.vercel.app/api/skills/moltfluence-content-research"
     },
     {
       "name": "moltfluence-script-writer",
-      "url": "https://moltfluence.vercel.app/api/skills/moltfluence-script-writer"
+      "url": "https://moltfluence-avax.vercel.app/api/skills/moltfluence-script-writer"
     },
     {
       "name": "moltfluence-prompt-compiler",
-      "url": "https://moltfluence.vercel.app/api/skills/moltfluence-prompt-compiler"
+      "url": "https://moltfluence-avax.vercel.app/api/skills/moltfluence-prompt-compiler"
     },
     {
       "name": "moltfluence-content-publish",
-      "url": "https://moltfluence.vercel.app/api/skills/moltfluence-content-publish"
+      "url": "https://moltfluence-avax.vercel.app/api/skills/moltfluence-content-publish"
+    },
+    {
+      "name": "moltfluence-captions",
+      "url": "https://moltfluence-avax.vercel.app/api/skills/moltfluence-captions"
+    },
+    {
+      "name": "moltfluence-schedule",
+      "url": "https://moltfluence-avax.vercel.app/api/skills/moltfluence-schedule"
+    },
+    {
+      "name": "moltfluence-attestation",
+      "url": "https://moltfluence-avax.vercel.app/api/skills/moltfluence-attestation"
     }
   ],
   "apis": {
@@ -36,6 +48,11 @@
     "generateImage": "/api/x402/generate-image",
     "generateVideo": "/api/x402/generate-video",
     "captionVideo": "/api/x402/caption-video",
-    "publishReel": "/api/x402/publish-reel"
+    "publishReel": "/api/x402/publish-reel",
+    "scheduleReel": "/api/x402/schedule-reel",
+    "attestation": "/api/x402/attestation",
+    "instagramAuth": "/api/auth/instagram",
+    "instagramStatus": "/api/auth/instagram/status",
+    "agentRegistration": "/api/.well-known/agent-registration"
   }
 }
