@@ -59,7 +59,7 @@ async function ensureWalletTable() {
 async function deriveAgentWallet(agentId: string): Promise<{ address: string; privateKey: string }> {
   const { Wallet, HDNodeWallet } = await import("ethers");
 
-  const masterKey = process.env.AGENT_PRIVATE_KEY;
+  const masterKey = process.env.AGENT_PRIVATE_KEY?.trim();
   if (!masterKey) throw new Error("AGENT_PRIVATE_KEY not set");
 
   // Derive a deterministic wallet: keccak256(masterKey + agentId) as private key
@@ -83,7 +83,7 @@ async function fundAgentWallet(
 ): Promise<string | null> {
   const { Wallet, JsonRpcProvider, Contract } = await import("ethers");
 
-  const treasuryKey = process.env.AGENT_PRIVATE_KEY;
+  const treasuryKey = process.env.AGENT_PRIVATE_KEY?.trim();
   if (!treasuryKey) return null;
 
   const provider = new JsonRpcProvider(FUJI_RPC);
