@@ -14,7 +14,8 @@ export const ltxAdapter: VideoGenAdapter = {
       prompt: request.prompt,
       model: "ltx-2-fast",
       duration,
-      resolution: "1920x1080",
+      resolution: "1280x720",
+      fps: 30,
       generate_audio: true,
     };
 
