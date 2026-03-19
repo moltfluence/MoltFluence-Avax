@@ -63,7 +63,7 @@ class FileAdapter implements StateAdapter {
 }
 
 function getAdapter(): StateAdapter {
-  const adapter = (process.env.MOLTFLUENCE_STATE_ADAPTER ?? process.env.MOLTFLUENCE_STATE_ADAPTER ?? "file").toLowerCase();
+  const adapter = (process.env.MOLTFLUENCE_STATE_ADAPTER ?? "file").toLowerCase();
   if (adapter === "memory") return new MemoryAdapter();
 
   const path = resolveStatePath();
@@ -71,7 +71,7 @@ function getAdapter(): StateAdapter {
 }
 
 function resolveStatePath(): string {
-  const configured = process.env.MOLTFLUENCE_STATE_FILE?.trim() || process.env.MOLTFLUENCE_STATE_FILE?.trim();
+  const configured = process.env.MOLTFLUENCE_STATE_FILE?.trim();
 
   if (configured && configured.length > 0) {
     if (process.env.VERCEL && !configured.startsWith("/tmp/")) {

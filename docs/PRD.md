@@ -1,6 +1,6 @@
 # Moltfluence — Moltiverse Hackathon PRD
 
-**Tagline:** Your AI agent becomes an influencer — and monetizes itself on Monad.
+**Tagline:** Your AI agent becomes an influencer — and monetizes itself on Avalanche.
 **Track:** Agent Track ($60K) | **Bounty:** Open Innovation
 
 ## 1. Problem
@@ -9,12 +9,12 @@ Distribution is hard. AI can generate content but nobody has the full autonomous
 
 ## 2. Vision
 
-Autonomous AI influencer agent on Monad. User defines character in 60s, agent swarm does the rest. Every video generation triggers on-chain USDT payment on Monad.
+Autonomous AI influencer agent on Avalanche. User defines character in 60s, agent swarm does the rest. Every video generation triggers on-chain USDC payment on Avalanche.
 
-## 3. Why Monad
+## 3. Why Avalanche
 
-- 10K TPS, sub-second finality, low fees
-- EVM compatible — USDT, EIP-3009, standard tooling
+- 4,500+ TPS, sub-second finality, low fees
+- EVM compatible — USDC, EIP-3009, standard tooling
 - Micropayments ($0.05–$0.50) economically viable
 - x402 facilitator supports EVM chains natively
 
@@ -26,9 +26,9 @@ Autonomous AI influencer agent on Monad. User defines character in 60s, agent sw
 4. **Render + QA** — video gen + automated validation
 5. **Instagram Autopost** — OAuth → upload → publish
 
-## 5. Payments (x402 on Monad)
+## 5. Payments (x402 on Avalanche)
 
-- Asset: USDT on Monad (eip155:143 or eip155:10143)
+- Asset: USDC on Avalanche (eip155:43113 or eip155:43114)
 - Protocol: x402 v2, EIP-3009 transferWithAuthorization
 - Facilitator: facilitator.mcpay.tech
 
@@ -36,28 +36,28 @@ Autonomous AI influencer agent on Monad. User defines character in 60s, agent sw
 
 - Next.js app + UI ✅
 - Video gen Hailuo/Kling ✅
-- x402 payment flow ✅ (swap to Monad EVM)
+- x402 payment flow ✅ (swap to Avalanche EVM)
 - Instagram OAuth + autopost ✅
 - Studio (VideoGenerator + ReelPublisher) ✅
 - Video pricing ✅ (add free tier)
 
 ## 7. New Work
 
-**P0:** Character creation UI, x402 rewrite for Monad EVM, agent swarm (trend + script + prompt compiler), free quota system, remove Solana deps + add viem.
+**P0:** Character creation UI, x402 rewrite for Avalanche EVM, agent swarm (trend + script + prompt compiler), free quota system, remove Solana deps + add viem.
 **P1:** QA Agent, landing page, demo video.
 
 ## 8. Success Criteria
 
 - Character created in <2 min
 - Video rendered successfully
-- x402 micropayment on Monad completes
+- x402 micropayment on Avalanche completes
 - Instagram autopost works
 - Free quota logic functional
 
 ## 9. Tech Stack
 
 - **Frontend:** Next.js 14, Tailwind v4, React 18
-- **Chain:** Monad (EVM, Chain ID 143/10143)
+- **Chain:** Avalanche (EVM, Chain ID 43113/43114)
 - **Payments:** x402 v2, USDT, EIP-3009
 - **Video:** Hailuo v2.3, Kling v2.6
 - **AI:** GPT-4o (character + scripts), trend APIs

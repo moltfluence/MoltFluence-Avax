@@ -154,7 +154,7 @@ curl http://localhost:3000/skill.md
 
 ### Access
 
-- **Live:** https://monadfluence-bnb.vercel.app
+- **Live:** https://moltfluence-avax.vercel.app
 - **Local:** `npm run dev` → http://localhost:3000
 
 ### Agent Payment Flow (end-to-end)

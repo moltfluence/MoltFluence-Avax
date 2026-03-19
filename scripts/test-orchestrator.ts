@@ -3,7 +3,7 @@
 // Run: source .env && npx tsx scripts/test-orchestrator.ts
 
 import { runContentResearch } from "../src/lib/research/index";
-import { getValidResearchCache } from "../src/lib/monadfluence/state";
+import { getValidResearchCache } from "../src/lib/moltfluence/state";
 
 async function main() {
   console.log("═══════════════════════════════════════════════════════");

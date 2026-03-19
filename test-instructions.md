@@ -18,8 +18,8 @@ yarn dev
 3. Click **"Initiate Neural Link"**.
 4. **What should happen:** 
    - You will see the matrix scanning animation.
-   - **MetaMask WILL NOT pop up.** (It has been bypassed in `DEMO_MODE=true`).
-   - The UI will finish instantly without waiting for the slow PiAPI servers.
+   - **MetaMask WILL pop up** to request payment for image generation via x402.
+   - The image will be generated via PiAPI servers (may take a few seconds).
    - You will be seamlessly transitioned to the **"Neural Link Established"** (Reveal) page.
 
 ### Phase 2: Proceed to Pipeline
@@ -34,6 +34,4 @@ yarn dev
    - The frontend will attempt to call the `/api/x402/generate-video` API.
    - *Wait, didn't we bypass MetaMask here too?* Let's check. 
 
-Actually, wait. If you **WANT** MetaMask to pop up here (to prove the Avalanche integration for the hackathon judges), we need to ensure the `DEMO_MODE` logic returns a 402 challenge *first*, collects the signature, and *then* bypasses the on-chain settlement. 
-
-If we bypassed the 402 challenge entirely in `generate-video` like we did in `generate-image`, you won't have any proof of Web3 integration for the video!
+MetaMask will pop up here to sign an ERC-3009 `transferWithAuthorization` for the video generation cost ($0.24 USDC). The signature is verified and settled on Avalanche Fuji via the Ultravioleta DAO facilitator.

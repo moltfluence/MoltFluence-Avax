@@ -1,6 +1,10 @@
 /**
- * x402-compatible caption-video endpoint (Monad testnet).
+ * x402-compatible caption-video endpoint (Avalanche Fuji C-Chain).
  * Burns word-by-word animated captions into a video via VPS caption service.
+ *
+ * Payment: x402 protocol with EIP-3009 transferWithAuthorization (gasless for payer).
+ * Facilitator: Ultravioleta DAO (Avalanche-native).
+ * Ref: https://build.avax.network/academy/blockchain/x402-payment-infrastructure
  */
 
 import { NextResponse } from "next/server";
@@ -31,7 +35,11 @@ export async function GET(): Promise<NextResponse> {
     endpoint: "caption-video",
     method: "POST",
     priceUsd: "$0.01",
-    description: "Burn word-by-word animated captions into a video (TikTok/Reels style)",
+    network: "eip155:43113",
+    facilitator: "Ultravioleta DAO (Avalanche-native, gasless for users)",
+    description:
+      "Burn word-by-word animated captions into a video (TikTok/Reels style). " +
+      "Payment settled via x402 on Avalanche Fuji C-Chain using Circle USDC.",
     params: {
       videoUrl: "URL of the video to caption (required)",
       style: "Caption style — currently 'tiktok-highlight' (optional, default: tiktok-highlight)",
@@ -56,6 +64,7 @@ export async function POST(req: Request): Promise<NextResponse> {
     const url = new URL(req.url);
     const resource = `${url.origin}${url.pathname}`;
 
+    // x402 challenge — no payment header means 402 Payment Required
     if (!payment) {
       return x402PaymentRequired({
         priceUsd,
@@ -65,6 +74,7 @@ export async function POST(req: Request): Promise<NextResponse> {
       });
     }
 
+    // Verify & settle via Ultravioleta DAO facilitator on Avalanche Fuji
     const verification = await verifyPaymentHeader({
       payment,
       expectedRecipient: treasury,

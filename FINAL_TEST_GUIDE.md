@@ -49,9 +49,9 @@ You are now on Step 4 ("Synthesis Ready"). You will see a button that says **PRO
 
 **WATCH WHAT HAPPENS:**
 - Look at your Network tab. You will see a POST request to `/api/x402/generate-video` or `/api/facilitator/settle`.
-- Because of our `DEMO_MODE` bypass, the server will instantly return `200 OK` with `{ "success": true, "mocked": true }`.
-- **Your Avalanche Fuji USDC balance will NOT go down.**
-- **You will NOT pay any AVAX gas.**
+- The server will verify your ERC-3009 signature via the Ultravioleta DAO facilitator and settle the USDC transfer on Avalanche Fuji.
+- **Your Avalanche Fuji USDC balance will decrease by the payment amount.**
+- **You will NOT pay any AVAX gas** (EIP-3009 is gasless for the payer — the facilitator sponsors gas).
 
 **STOP HERE.** 
 Once MetaMask closes and the UI shows a loading spinner or a success state, **close the tab**. You have just proven that the entire Avalanche x402 payment flow works perfectly. You can now save your 1 video credit for the Telegram bot!

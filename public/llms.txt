@@ -1,4 +1,4 @@
-Moltfluence MONAD is a bot-first AI influencer backend.
+Moltfluence Avalanche is a bot-first AI influencer backend.
 
 Canonical skill entrypoint:
 - https://moltfluence.vercel.app/skill.md

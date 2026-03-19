@@ -3,7 +3,7 @@ skill: moltfluence-script-writer
 version: 1.0.0
 consumer: openclaw-tg-bot
 trigger: script-generation-request
-api_base: https://modfluencemonad.vercel.app
+api_base: https://moltfluence-avax.vercel.app
 model: groq/llama-3.3-70b
 ---
 
@@ -85,7 +85,7 @@ Rules:
 ### Step 3 — Call the API
 
 ```
-POST https://modfluencemonad.vercel.app/api/swarm/scripts
+POST https://moltfluence-avax.vercel.app/api/swarm/scripts
 Content-Type: application/json
 
 <request body from Step 2>
@@ -295,7 +295,7 @@ The API generates scripts via character-tuned prompts. Verify these quality stan
 **Agent executes:**
 
 ```
-POST https://modfluencemonad.vercel.app/api/swarm/scripts
+POST https://moltfluence-avax.vercel.app/api/swarm/scripts
 Content-Type: application/json
 
 {

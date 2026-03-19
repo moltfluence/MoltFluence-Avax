@@ -1,6 +1,6 @@
 /**
  * x402 Protocol utilities for EVM pay-per-call endpoints.
- * Monad-first network selection via configured facilitator.
+ * Avalanche-first network selection via configured facilitator.
  */
 
 import { NextResponse } from "next/server";
@@ -53,7 +53,7 @@ export function x402PaymentRequired(opts: {
   description: string;
   resourceUrl: string;
 }): NextResponse {
-  // MONAD USDC has 6 decimals
+  // Avalanche USDC has 6 decimals
   const amountWei = BigInt(Math.round(opts.priceUsd * 1e6)).toString();
   const config = getX402Config();
   const networks = [config.primary];

@@ -1,6 +1,9 @@
 /**
- * x402-compatible Instagram Reel publishing endpoint (Monad testnet).
- * Uses custom x402 v2 headers + facilitator verification.
+ * x402-compatible Instagram Reel publishing endpoint (Avalanche Fuji C-Chain).
+ *
+ * Payment: x402 protocol with EIP-3009 transferWithAuthorization (gasless for payer).
+ * Facilitator: Ultravioleta DAO (Avalanche-native).
+ * Ref: https://build.avax.network/academy/blockchain/x402-payment-infrastructure
  */
 
 import { NextResponse } from "next/server";
@@ -48,6 +51,7 @@ export async function POST(req: Request): Promise<NextResponse> {
     const url = new URL(req.url);
     const resource = `${url.origin}${url.pathname}`;
 
+    // x402 challenge — no payment header means 402 Payment Required
     if (!payment) {
       return x402PaymentRequired({
         priceUsd,
@@ -57,6 +61,7 @@ export async function POST(req: Request): Promise<NextResponse> {
       });
     }
 
+    // Verify & settle via Ultravioleta DAO facilitator on Avalanche Fuji
     const verification = await verifyPaymentHeader({
       payment,
       expectedRecipient: treasury,

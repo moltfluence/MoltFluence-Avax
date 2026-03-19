@@ -33,7 +33,7 @@ async function testCollector(
 
 async function main() {
   console.log("═══════════════════════════════════════════════════════");
-  console.log("  MONADFLUENCE COLLECTOR INTEGRATION TEST");
+  console.log("  MOLTFLUENCE COLLECTOR INTEGRATION TEST");
   console.log("═══════════════════════════════════════════════════════");
 
   const results = [];

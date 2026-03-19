@@ -11,8 +11,7 @@
  *   4. setAgentURI()       → point the on-chain NFT to ipfs://CID
  *
  * NOTE: ERC-8004 registry is not yet deployed on Avalanche Fuji.
- * Contract calls are gracefully mocked so the UI never crashes.
- * The mock returns a realistic agentId and IPFS URI for the demo.
+ * Contract calls are gracefully handled so the UI never crashes.
  *
  * Avalanche Fuji Testnet RPC:
  *   https://api.avax-test.network/ext/bc/C/rpc
@@ -51,7 +50,7 @@ export const avalancheMainnet: Chain = {
 
 // ---------------------------------------------------------------------------
 // Registry — ERC-8004 not yet deployed on Avalanche.
-// Using MOCK addresses. Contract calls are bypassed in DEMO_MODE.
+// Using placeholder addresses until registry is deployed.
 // ---------------------------------------------------------------------------
 
 export const REGISTRY = {
@@ -198,7 +197,7 @@ export function buildAgentCard(opts: {
 }
 
 // ---------------------------------------------------------------------------
-// Core registration — MOCK when DEMO_MODE=true or registry not deployed
+// Core registration — graceful fallback when registry not deployed
 // ---------------------------------------------------------------------------
 
 export interface RegisterResult {
@@ -214,7 +213,6 @@ export async function registerAgentOnChain(opts?: {
   network?: "testnet" | "mainnet";
   apiBase?: string;
 }): Promise<RegisterResult> {
-  const DEMO_MODE = process.env.DEMO_MODE === "true";
   const useMainnet =
     opts?.network === "mainnet" ||
     process.env.AVAX_NETWORK === "mainnet" ||
@@ -226,34 +224,6 @@ export async function registerAgentOnChain(opts?: {
     opts?.apiBase ??
     process.env.NEXT_PUBLIC_URL?.trim() ??
     "https://moltfluence.vercel.app";
-
-  // ------------------------------------------------------------------
-  // DEMO_MODE: Skip all on-chain transactions — return realistic mock
-  // ------------------------------------------------------------------
-  if (DEMO_MODE) {
-    const mockAgentId = BigInt(8004);
-    const mockCard = buildAgentCard({
-      agentId: mockAgentId,
-      chain,
-      registryAddress,
-      apiBase,
-    });
-    const ipfsUri = await uploadToPinata(mockCard, mockAgentId);
-
-    console.log(
-      "[erc8004] DEMO_MODE — skipping on-chain registration, returning mock result"
-    );
-    return {
-      agentId: mockAgentId,
-      ipfsUri,
-      txHash:
-        "0xdemo000000000000000000000000000000000000000000000000000000000001",
-      setUriTxHash:
-        "0xdemo000000000000000000000000000000000000000000000000000000000002",
-      explorerUrl: `https://testnet.snowtrace.io/address/${registryAddress}`,
-      mocked: true,
-    };
-  }
 
   // ------------------------------------------------------------------
   // Live path — requires AGENT_PRIVATE_KEY and deployed registry
@@ -383,11 +353,6 @@ export async function getAgentURI(
   agentId: bigint,
   network: "testnet" | "mainnet" = "testnet"
 ): Promise<string> {
-  const DEMO_MODE = process.env.DEMO_MODE === "true";
-  if (DEMO_MODE) {
-    return `ipfs://bafkreiavax${agentId.toString().padStart(8, "0")}moltfluence`;
-  }
-
   const chain = network === "mainnet" ? avalancheMainnet : avalancheFujiChain;
   const registryAddress = REGISTRY.testnet;
 
@@ -415,14 +380,6 @@ export async function updateAgentURI(
   newUri: string,
   network: "testnet" | "mainnet" = "testnet"
 ): Promise<`0x${string}`> {
-  const DEMO_MODE = process.env.DEMO_MODE === "true";
-  if (DEMO_MODE) {
-    console.log(
-      `[erc8004] DEMO_MODE — skipping updateAgentURI on-chain call`
-    );
-    return "0xdemo000000000000000000000000000000000000000000000000000000000003";
-  }
-
   const chain = network === "mainnet" ? avalancheMainnet : avalancheFujiChain;
   const registryAddress = REGISTRY.testnet;
 

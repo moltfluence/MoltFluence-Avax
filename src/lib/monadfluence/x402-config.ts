@@ -80,6 +80,6 @@ export function getX402Config(): X402Config {
     // Avalanche-compatible x402 facilitator
     facilitatorUrl:
       process.env.X402_FACILITATOR_URL?.trim() ||
-      "https://x402.org/facilitator",
+      "https://facilitator.ultravioletadao.xyz",
   };
 }

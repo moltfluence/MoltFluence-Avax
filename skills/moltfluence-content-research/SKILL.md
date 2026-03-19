@@ -3,7 +3,7 @@ skill: moltfluence-content-research
 version: 1.0.0
 consumer: openclaw-tg-bot
 trigger: content-research-request
-api_base: https://modfluencemonad.vercel.app
+api_base: https://moltfluence-avax.vercel.app
 ---
 
 # Skill: Content Research Pipeline
@@ -49,7 +49,7 @@ If the user has a character profile loaded, use its `niche` field.
 Make this exact HTTP request:
 
 ```
-POST https://modfluencemonad.vercel.app/api/swarm/trends
+POST https://moltfluence-avax.vercel.app/api/swarm/trends
 Content-Type: application/json
 
 {
@@ -192,7 +192,7 @@ This means when a user asks for trends, there's usually a fresh cache available.
 **Agent executes:**
 
 ```
-POST https://modfluencemonad.vercel.app/api/swarm/trends
+POST https://moltfluence-avax.vercel.app/api/swarm/trends
 Content-Type: application/json
 
 { "niche": "crypto" }

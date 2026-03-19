@@ -84,6 +84,4 @@ The Moltfluence pipeline is divided into three distinct layers:
 - **Network:** Avalanche Fuji Testnet (`eip155:43113`)
 - **Payment Token:** Native Circle USDC (`0x5425890298aed601595a70AB815c96711a31Bc65`)
 - **Transfer Mechanism:** ERC-3009 `transferWithAuthorization` (Gasless)
-- **Facilitator:** Custom self-hosted `@x402/core` Node
-
-*(Note: In the provided repository, `DEMO_MODE=true` is enabled by default to allow hackathon judges to evaluate the UX flow without needing to fund wallets with Testnet AVAX or expend API credits).*
+- **Facilitator:** [Ultravioleta DAO](https://build.avax.network/integrations/ultravioletadao) (Avalanche-native, gasless for end-users)

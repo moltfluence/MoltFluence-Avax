@@ -1,4 +1,4 @@
-/** Monad testnet USDC minimum transfer is effectively clamped to $0.01 */
+/** Avalanche Fuji testnet USDC minimum transfer is effectively clamped to $0.01 */
 const MIN_TRANSFER_USD = 0.01;
 
 export const IMAGE_PRICING: Record<string, { usd: number; piModel: string }> = {

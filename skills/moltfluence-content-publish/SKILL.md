@@ -1,7 +1,7 @@
 ---
 name: moltfluence-content-publish
 description: Use when a user wants to generate and publish content. Run trends to scripts to prompts to video generation to QA to Instagram publishing using x402 paid endpoints.
-homepage: https://modfluencemonad.vercel.app
+homepage: https://moltfluence-avax.vercel.app
 compatibility: Requires an x402-capable runtime for paid endpoints. For custom Node bots, use Node 18+ (Node 20 recommended).
 metadata: {"openclaw": {"emoji": "🎬"}}
 ---
@@ -15,7 +15,7 @@ Run the full bot flow from topic selection to published reel URL.
 
 ## Runtime Contract
 - Startup rule: Never block at skill start for missing env vars. Start workflow and only request keys at a payment step.
-- Default API base is `https://modfluencemonad.vercel.app` when `MOLTFLUENCE_API_URL` is not set.
+- Default API base is `https://moltfluence-avax.vercel.app` when `MOLTFLUENCE_API_URL` is not set.
 - `EVM_PRIVATE_KEY` is required only when a call returns `402` and payment is needed.
 - Bot wallet is externally provisioned and funded. Do not create wallets in this skill.
 - Use one stable identity header for all calls: `x-user-id: <channel_user_id>`.
@@ -24,7 +24,7 @@ Run the full bot flow from topic selection to published reel URL.
 Use:
 
 ```bash
-API_BASE="${MOLTFLUENCE_API_URL:-https://modfluencemonad.vercel.app}"
+API_BASE="${MOLTFLUENCE_API_URL:-https://moltfluence-avax.vercel.app}"
 ```
 
 ---
@@ -64,7 +64,7 @@ import { ExactEvmScheme } from "@x402/evm";
 import { privateKeyToAccount } from "viem/accounts";
 import { fetch as undiciFetch } from "undici";
 
-const API_BASE = process.env.MOLTFLUENCE_API_URL || "https://modfluencemonad.vercel.app";
+const API_BASE = process.env.MOLTFLUENCE_API_URL || "https://moltfluence-avax.vercel.app";
 const USER_ID = "<channel_user_id>";
 
 const payer = privateKeyToAccount(process.env.EVM_PRIVATE_KEY as `0x${string}`);

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-const API_BASE = "https://moltfluencemonad.vercel.app";
+const API_BASE = "https://moltfluence-avax.vercel.app";
 
 type Topic = {
   id: string;

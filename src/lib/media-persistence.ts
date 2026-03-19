@@ -100,9 +100,7 @@ export function getAssetRetentionPolicy(args: {
 }
 
 async function persistViaEndpoint(input: PersistInput): Promise<PersistResult | null> {
-  const endpoint =
-    process.env.MOLTFLUENCE_ASSET_PERSIST_ENDPOINT?.trim() ||
-    process.env.MOLTFLUENCE_ASSET_PERSIST_ENDPOINT?.trim();
+  const endpoint = process.env.MOLTFLUENCE_ASSET_PERSIST_ENDPOINT?.trim();
   if (!endpoint) return null;
 
   const res = await fetch(endpoint, {

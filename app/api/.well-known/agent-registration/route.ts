@@ -12,8 +12,9 @@ import { NextResponse } from "next/server";
  */
 export async function GET() {
   const agentId = process.env.ERC8004_AGENT_ID;
+  // Placeholder — ERC-8004 registry not yet deployed on Avalanche Fuji.
   const registry =
-    process.env.ERC8004_REGISTRY ?? "0x8004A818BFB912233c491871b3d84c89A494BD9e";
+    process.env.ERC8004_REGISTRY ?? "0x0000000000000000000000000000000000008004";
   const network = process.env.ERC8004_NETWORK ?? "eip155:43113";
 
   // agentRegistry is the CAIP-10 format: eip155:{chainId}:{contractAddress}

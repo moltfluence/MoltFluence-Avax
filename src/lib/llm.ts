@@ -2,12 +2,6 @@ import { Groq } from "groq-sdk";
 import type { CharacterProfile, ContentBrief, ScriptDraft } from "./moltfluence/types";
 import type { ScoredItem, SynthesizedTopic } from "./research/types";
 
-// ---------------------------------------------------------------------------
-// DEMO_MODE guard — bypasses ALL Groq API calls to save credits
-// Set DEMO_MODE=true in .env to enable
-// ---------------------------------------------------------------------------
-const DEMO_MODE = process.env.DEMO_MODE === "true";
-
 let groqClient: Groq | null = null;
 
 function getGroqClient(): Groq {
@@ -73,68 +67,6 @@ export async function synthesizeTopics(
   niche: string,
   scoredItems: ScoredItem[]
 ): Promise<SynthesizedTopic[]> {
-  // DEMO_MODE: skip Groq — return 5 pre-baked trending topics instantly
-  if (DEMO_MODE) {
-    console.log("[llm] DEMO_MODE — returning mock synthesized topics");
-    return [
-      {
-        id: `topic-demo-1`,
-        title: "Avalanche's C-Chain Just Obliterated Gas Fees Again",
-        angle: "Sub-cent transactions make Ethereum look like a fax machine",
-        whyNow: "Avalanche Fuji testnet processed 2M transactions in 24h at near-zero cost",
-        hookIdea: "You're still paying $40 gas on Ethereum while I just sent USDC for $0.001",
-        controversyScore: 4,
-        engagementScore: 87,
-        visualConcept: "Side-by-side gas fee comparison, Avalanche logo glowing red",
-        sources: [],
-      },
-      {
-        id: `topic-demo-2`,
-        title: "x402 Micropayments: The API Business Model Is Dead",
-        angle: "Pay-per-call with crypto is replacing SaaS subscriptions",
-        whyNow: "x402 protocol launched on Avalanche C-Chain this week",
-        hookIdea: "What if every API call cost $0.001 instead of $99/month?",
-        controversyScore: 3,
-        engagementScore: 79,
-        visualConcept: "API request animation with tiny USDC coins flying",
-        sources: [],
-      },
-      {
-        id: `topic-demo-3`,
-        title: "AI Agents That Pay Each Other Is Now Real on Avalanche",
-        angle: "Autonomous agent-to-agent micropayments via USDC x402",
-        whyNow: "Moltfluence deployed the first influencer AI agent on Fuji testnet",
-        hookIdea: "My AI just paid another AI $0.01 to generate a script. No human involved.",
-        controversyScore: 5,
-        engagementScore: 94,
-        visualConcept: "Two robot avatars exchanging glowing USDC coins on Avalanche network",
-        sources: [],
-      },
-      {
-        id: `topic-demo-4`,
-        title: "AVAX's Subnet Architecture Has No Real Competition",
-        angle: "Custom blockchains in 10 minutes vs. years of L2 development",
-        whyNow: "Three new subnets launched on Avalanche this week",
-        hookIdea: "Ethereum L2s take 2 years to launch. Avalanche subnets take 10 minutes.",
-        controversyScore: 4,
-        engagementScore: 82,
-        visualConcept: "Branching network diagram, Avalanche red nodes expanding rapidly",
-        sources: [],
-      },
-      {
-        id: `topic-demo-5`,
-        title: "Circle USDC on Fuji: Why Native Beats Bridged Every Time",
-        angle: "Circle's native USDC on Avalanche eliminates bridge risk entirely",
-        whyNow: "Circle launched native USDC on Avalanche Fuji testnet",
-        hookIdea: "Bridged USDC is like a photocopy of money. Native USDC is the real thing.",
-        controversyScore: 2,
-        engagementScore: 71,
-        visualConcept: "USDC coin with Avalanche logo, bridge crossing with red X through it",
-        sources: [],
-      },
-    ];
-  }
-
   if (!process.env.GROQ_API_KEY) {
     console.warn("[llm] GROQ_API_KEY missing, cannot synthesize topics");
     return [];
@@ -242,37 +174,6 @@ export async function generateCreativeScripts(
   profile: CharacterProfile,
   brief: ContentBrief
 ): Promise<ScriptDraft[]> {
-  // DEMO_MODE: skip Groq — return 3 pre-baked Avalanche scripts instantly
-  if (DEMO_MODE) {
-    console.log("[llm] DEMO_MODE — returning mock creative scripts");
-    return [
-      {
-        id: `script-demo-1`,
-        title: "Hot Take: Avalanche vs ETH Gas Fees",
-        hook: "You're still paying $40 gas on Ethereum while I just sent USDC for literally one tenth of a cent.",
-        body: "Avalanche C-Chain processes transactions in under 2 seconds with fees under $0.01. Not a testnet trick — that's mainnet reality. The x402 protocol lets AI agents pay each other in USDC micropayments without any human clicking approve. That's the future of the internet.",
-        cta: "Drop a fire emoji if you're done overpaying for gas. Follow for daily Avalanche alpha.",
-        durationTargetSec: 22,
-      },
-      {
-        id: `script-demo-2`,
-        title: "Breakdown: What x402 Actually Does",
-        hook: "Most devs have never heard of x402 — and that's why they're building the wrong thing.",
-        body: "x402 is an HTTP payment protocol. When your app hits a paid API, instead of a login screen, you get a payment challenge. You sign a USDC transaction on Avalanche. Done. No subscriptions. No API keys. No rate limits. Pay only for what you use, instantly, on-chain.",
-        cta: "Share this with a developer who still uses API keys. They need to see this.",
-        durationTargetSec: 22,
-      },
-      {
-        id: `script-demo-3`,
-        title: "Story: My AI Agent Paid Another AI",
-        hook: "I just watched my AI agent pay another AI agent $0.001 for a video script. No human was involved.",
-        body: "Moltfluence is an autonomous influencer pipeline. It researches trends, writes scripts, generates videos, and posts to Instagram — all triggered by a single wallet signature on Avalanche Fuji. The payment settles in USDC via ERC-3009. The whole pipeline costs under $0.05. This is the agentic economy.",
-        cta: "Would you trust an AI agent to run your brand? Comment yes or no — I read every reply.",
-        durationTargetSec: 22,
-      },
-    ];
-  }
-
   if (!process.env.GROQ_API_KEY) {
     console.warn("[llm] GROQ_API_KEY missing, cannot generate scripts");
     return [];

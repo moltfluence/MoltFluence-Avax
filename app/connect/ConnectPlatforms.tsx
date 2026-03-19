@@ -59,14 +59,14 @@ export default function ConnectPlatforms() {
         )}
       </div>
 
-      {/* MONAD Chain Wallet (coming soon) */}
+      {/* Avalanche Chain Wallet (coming soon) */}
       <div className="rounded-2xl border border-white/10 bg-surface-dark p-6 opacity-60">
         <div className="flex items-center gap-3 mb-4">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-red-500/10 ring-1 ring-red-500/20">
             <span className="material-symbols-outlined text-red-400 text-[22px]">account_balance_wallet</span>
           </div>
           <div>
-            <h2 className="text-lg font-bold text-white">MONAD Chain Wallet</h2>
+            <h2 className="text-lg font-bold text-white">Avalanche Chain Wallet</h2>
             <p className="text-xs text-text-muted">Connect your EVM wallet for on-chain payments</p>
           </div>
         </div>

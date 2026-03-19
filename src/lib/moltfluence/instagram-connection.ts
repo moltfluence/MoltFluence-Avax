@@ -17,9 +17,7 @@ const DEFAULT_FILE = process.env.VERCEL
   : join(process.cwd(), ".data", "instagram-connection.json");
 
 function getFilePath(): string {
-  const configured =
-    process.env.MOLTFLUENCE_INSTAGRAM_STATE_FILE?.trim() ||
-    process.env.MOLTFLUENCE_INSTAGRAM_STATE_FILE?.trim();
+  const configured = process.env.MOLTFLUENCE_INSTAGRAM_STATE_FILE?.trim();
   if (configured && configured.length > 0) {
     if (process.env.VERCEL && !configured.startsWith("/tmp/")) {
       const basename = configured.split("/").filter(Boolean).pop() || "instagram-connection.json";

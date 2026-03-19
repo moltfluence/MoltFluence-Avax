@@ -8,7 +8,7 @@ import { getSubredditsForNiche } from "../src/lib/research/niche-config";
 import { scoreAndDedup } from "../src/lib/research/scorer";
 import { synthesizeTopics, generateCreativeScripts } from "../src/lib/llm";
 import type { ResearchItem } from "../src/lib/research/types";
-import type { CharacterProfile, ContentBrief } from "../src/lib/monadfluence/types";
+import type { CharacterProfile, ContentBrief } from "../src/lib/moltfluence/types";
 
 async function main() {
   console.log("═══════════════════════════════════════════════════════");

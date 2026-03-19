@@ -127,7 +127,6 @@ export async function POST(req: Request): Promise<NextResponse> {
       });
     }
 
-    const DEMO_MODE = process.env.DEMO_MODE === "true";
     const apiKey = process.env.LTX_API_KEY;
     if (!apiKey) {
       return NextResponse.json({ error: "LTX_API_KEY not configured" }, { status: 500 });
@@ -204,7 +203,7 @@ export async function GET() {
 
   return NextResponse.json({
     x402: true,
-    description: "AI video generation — LTX-2-fast with English audio, via x402 pay-per-call (Monad testnet).",
+    description: "AI video generation — LTX-2-fast with English audio, via x402 pay-per-call (Avalanche Fuji testnet).",
     model: "ltx-2-fast",
     resolution: "1920x1080",
     audioEnabled: true,

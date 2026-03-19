@@ -77,9 +77,11 @@ const AVAX_FUJI_DEFAULT: X402NetworkConfig = {
 export function getX402Config(): X402Config {
   return {
     primary: AVAX_FUJI_DEFAULT,
-    // Avalanche-compatible x402 facilitator
+    // Avalanche-native x402 facilitator — Ultravioleta DAO
+    // Gasless for end-users, EIP-3009 settlement, stateless verification.
+    // Docs: https://build.avax.network/integrations/ultravioletadao
     facilitatorUrl:
       process.env.X402_FACILITATOR_URL?.trim() ||
-      "https://x402.org/facilitator",
+      "https://facilitator.ultravioletadao.xyz",
   };
 }

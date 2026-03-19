@@ -1,5 +1,5 @@
 /**
- * x402-compatible image generation endpoint (Monad testnet).
+ * x402-compatible image generation endpoint (Avalanche Fuji testnet).
  * Manual x402 header handling for per-model dynamic pricing.
  */
 
@@ -38,11 +38,7 @@ export async function POST(req: Request): Promise<NextResponse> {
       return NextResponse.json({ error: "Treasury wallet not configured" }, { status: 500 });
     }
 
-    const DEMO_MODE = process.env.DEMO_MODE === "true";
-
     const apiKey = process.env.PIAPI_KEY || process.env.HAILUO_API_KEY;
-    // Removed !DEMO_MODE check here. We now require the API key even in DEMO_MODE
-    // so we can actually trigger the real image generation.
     if (!apiKey) {
       return NextResponse.json({ error: "Image generation API key not configured" }, { status: 500 });
     }
@@ -55,46 +51,42 @@ export async function POST(req: Request): Promise<NextResponse> {
     const url = new URL(req.url);
     const resource = `${url.origin}${url.pathname}`;
 
-    // DEMO_MODE: Bypass all payment requirements. Do not return 402, do not prompt MetaMask.
-    if (!DEMO_MODE) {
-      if (!payment) {
-        return x402PaymentRequired({
-          priceUsd: costUsd,
-          recipient: treasury,
-          description: `AI image generation: ${payload.model}`,
-          resourceUrl: resource,
-        });
-      }
-
-      const verification = await verifyPaymentHeader({
-        payment,
-        expectedRecipient: treasury,
-        resource,
-        maxAmountRequired: String(costMicroUsdc),
+    if (!payment) {
+      return x402PaymentRequired({
+        priceUsd: costUsd,
+        recipient: treasury,
         description: `AI image generation: ${payload.model}`,
-      });
-
-      if (!verification.valid) {
-        return NextResponse.json(
-          {
-            error: "Payment verification failed",
-            detail: verification.reason ?? "unknown",
-            requiredUsd: costUsd,
-          },
-          { status: 402 },
-        );
-      }
-
-      paymentAuditLog({
-        action: "generate-image",
-        payment,
-        verification,
-        userKey,
-        resource,
+        resourceUrl: resource,
       });
     }
 
-    // Always generate real images via PiAPI (even in DEMO_MODE)
+    const verification = await verifyPaymentHeader({
+      payment,
+      expectedRecipient: treasury,
+      resource,
+      maxAmountRequired: String(costMicroUsdc),
+      description: `AI image generation: ${payload.model}`,
+    });
+
+    if (!verification.valid) {
+      return NextResponse.json(
+        {
+          error: "Payment verification failed",
+          detail: verification.reason ?? "unknown",
+          requiredUsd: costUsd,
+        },
+        { status: 402 },
+      );
+    }
+
+    paymentAuditLog({
+      action: "generate-image",
+      payment,
+      verification,
+      userKey,
+      resource,
+    });
+
     const adapter = getImageAdapter(payload.model);
     const jobId = await adapter.generateImage(
       {
@@ -148,7 +140,7 @@ export async function GET() {
 
   return NextResponse.json({
     x402: true,
-    description: "AI image generation via x402 pay-per-call (Monad testnet).",
+    description: "AI image generation via x402 pay-per-call (Avalanche Fuji testnet).",
     models,
     providerPricing,
     pricingNotes: [
