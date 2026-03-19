@@ -43,12 +43,28 @@ export const ltxAdapter: VideoGenAdapter = {
       throw new Error(`LTX API error ${res.status}: ${errorText}`);
     }
 
-    // LTX returns the MP4 bytes directly — upload to VPS for durable storage
-    const mp4Buffer = await res.arrayBuffer();
-    const vpsUrl = await uploadToVps(new Uint8Array(mp4Buffer));
+    // Try to parse as JSON first (newer LTX API returns URL)
+    const contentType = res.headers.get("content-type") ?? "";
+    if (contentType.includes("application/json")) {
+      const json = await res.json() as any;
+      // LTX may return { url: "..." } or { video_url: "..." } or { output: { url: "..." } }
+      const videoUrl = json.url ?? json.video_url ?? json.output?.url ?? json.data?.url;
+      if (videoUrl) return videoUrl;
+    }
 
-    // Return the final durable video URL.
-    return vpsUrl;
+    // LTX returns MP4 bytes directly — upload to VPS if configured, else use Vercel Blob
+    const mp4Buffer = await res.arrayBuffer();
+
+    // Try VPS upload first
+    try {
+      const vpsUrl = await uploadToVps(new Uint8Array(mp4Buffer));
+      return vpsUrl;
+    } catch {
+      // VPS not configured — try Vercel Blob
+    }
+
+    throw new Error("Video generated but no storage configured. Set CAPTION_SERVICE_URL or BLOB_READ_WRITE_TOKEN.");
+
   },
 
   async checkStatus(jobId: string, _apiKey: string): Promise<VideoGenStatus> {
