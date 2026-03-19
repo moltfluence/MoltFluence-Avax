@@ -14,6 +14,7 @@ export const ltxAdapter: VideoGenAdapter = {
       prompt: request.prompt,
       model: "ltx-2-fast",
       duration,
+      resolution: "720p",
       generate_audio: true,
     };
 
