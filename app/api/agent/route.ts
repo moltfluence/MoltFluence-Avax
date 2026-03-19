@@ -90,6 +90,10 @@ export async function POST(req: Request): Promise<NextResponse> {
       if (!wallet) {
         return NextResponse.json({
           error: "Wallet provisioning failed. Check AGENT_PRIVATE_KEY and DATABASE_URL.",
+          debug: {
+            hasPrivateKey: !!process.env.AGENT_PRIVATE_KEY,
+            hasDbUrl: !!process.env.DATABASE_URL,
+          },
         }, { status: 500 });
       }
 

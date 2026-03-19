@@ -163,8 +163,8 @@ export async function provisionAgentWallet(
       usdcBalance: txHash ? fundAmount : "0",
     };
   } catch (err) {
-    console.error("[agent-wallet] Provision failed:", (err as Error).message);
-    return null;
+    console.error("[agent-wallet] Provision failed:", err);
+    throw err; // Let the route handler see the actual error
   }
 }
 
