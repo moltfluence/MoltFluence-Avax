@@ -10,11 +10,18 @@ export const ltxAdapter: VideoGenAdapter = {
     const isImageToVideo = Boolean(request.imageUrl);
     const endpoint = isImageToVideo ? "/image-to-video" : "/text-to-video";
 
+    // ltx-2-fast: 1920x1080 / 2560x1440 / 3840x2160, fps 25 or 50, landscape only
+    // ltx-2-3-fast: same resolutions + supports 9:16 portrait, fps 24/25/48/50
+    // Ref: https://docs.ltx.video/models
+    const isPortrait = request.aspectRatio === "9:16";
+    const model = isPortrait ? "ltx-2-3-fast" : "ltx-2-fast";
+
     const body: Record<string, unknown> = {
       prompt: request.prompt,
-      model: "ltx-2-fast",
+      model,
       duration,
-      resolution: "720p",
+      resolution: "1920x1080",
+      fps: 25,
       generate_audio: true,
     };
 
