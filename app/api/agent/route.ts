@@ -1,66 +1,73 @@
 /**
- * Agent Wallet API — Discover agent identity, wallet, and capabilities.
+ * Agent Wallet API — Register, provision wallet, and manage identity.
  *
- * GET  /api/agent — Get agent wallet info, ERC-8004 identity, x402 config
- * POST /api/agent — Register agent identity on ERC-8004
+ * POST /api/agent — Register agent + provision wallet + fund with USDC
+ * GET  /api/agent — Get agent wallet info
+ *
+ * Flow:
+ *   1. Agent calls POST /api/agent with { name: "MyAgent" }
+ *   2. Server generates a wallet, stores in Neon DB, funds with USDC from treasury
+ *   3. Returns wallet address — agent is now ready to use paid endpoints
+ *   4. All subsequent calls with x-user-id header use the agent's wallet for x402
  *
  * Powered by @0xgasless/agent-sdk on Avalanche Fuji C-Chain.
- * Ref: https://build.avax.network/integrations/0xgasless
  */
 
 import { NextResponse } from "next/server";
 import {
-  getAgentWalletInfo,
+  provisionAgentWallet,
+  getAgentWallet,
   registerAgentIdentity,
-  getAgentReputation,
 } from "@/lib/agent-wallet";
 
-export async function GET(): Promise<NextResponse> {
-  const info = await getAgentWalletInfo();
+export async function GET(req: Request): Promise<NextResponse> {
+  const url = new URL(req.url);
+  const agentId = url.searchParams.get("id") || req.headers.get("x-user-id");
 
-  if (!info) {
+  if (!agentId) {
     return NextResponse.json({
-      error: "Agent wallet not configured. Set AGENT_PRIVATE_KEY env var.",
-      setup: {
-        required: ["AGENT_PRIVATE_KEY"],
-        description:
-          "The agent wallet enables autonomous x402 payments and ERC-8004 identity on Avalanche Fuji.",
-        sdk: "@0xgasless/agent-sdk",
-        docs: "https://build.avax.network/integrations/0xgasless",
+      error: "Provide ?id=<agent_id> or x-user-id header",
+      usage: {
+        register: "POST /api/agent with { name: 'MyAgent' }",
+        check: "GET /api/agent?id=<agent_id>",
       },
-    }, { status: 503 });
+    }, { status: 400 });
+  }
+
+  const wallet = await getAgentWallet(agentId);
+  if (!wallet) {
+    return NextResponse.json({
+      error: "Agent not found. Register first: POST /api/agent",
+      agentId,
+    }, { status: 404 });
   }
 
   return NextResponse.json({
-    agent: {
-      address: info.address,
-      network: info.network,
-      capabilities: [
-        "x402-gasless-payments",
-        "erc8004-identity",
-        "erc8004-reputation",
-        "account-abstraction",
-        "teleporter-attestation",
-      ],
+    agentId,
+    wallet: {
+      address: wallet.address,
+      funded: wallet.funded,
+      usdcBalance: wallet.usdcBalance,
+      network: "Avalanche Fuji (eip155:43113)",
     },
-    erc8004: info.erc8004,
-    x402: info.x402,
+    capabilities: [
+      "x402-gasless-payments",
+      "erc8004-identity",
+      "account-abstraction",
+    ],
     endpoints: {
-      paidWithAutoPayment: [
-        "POST /api/x402/generate-video",
+      paid: [
         "POST /api/x402/generate-image",
+        "POST /api/x402/generate-video",
         "POST /api/x402/caption-video",
         "POST /api/x402/publish-reel",
       ],
       free: [
-        "GET /api/state/character",
         "POST /api/state/character",
         "POST /api/swarm/trends",
         "POST /api/swarm/scripts",
         "POST /api/swarm/prompt-compile",
         "GET /api/x402/attestation",
-        "GET /api/x402/quota",
-        "GET /api/x402/info",
       ],
     },
   });
@@ -69,44 +76,71 @@ export async function GET(): Promise<NextResponse> {
 export async function POST(req: Request): Promise<NextResponse> {
   try {
     const body = await req.json();
-    const { action, name, metadataUri, agentId } = body;
+    const { name, action, metadataUri } = body;
 
-    if (action === "register") {
-      if (!name || !metadataUri) {
+    // Register + provision wallet
+    if (!action || action === "register") {
+      if (!name) {
+        return NextResponse.json({ error: "name is required" }, { status: 400 });
+      }
+
+      const agentId = name.toLowerCase().replace(/[^a-z0-9-]/g, "-");
+      const wallet = await provisionAgentWallet(agentId);
+
+      if (!wallet) {
+        return NextResponse.json({
+          error: "Wallet provisioning failed. Check AGENT_PRIVATE_KEY and DATABASE_URL.",
+        }, { status: 500 });
+      }
+
+      return NextResponse.json({
+        registered: true,
+        agentId,
+        wallet: {
+          address: wallet.address,
+          funded: wallet.funded,
+          usdcBalance: wallet.usdcBalance,
+          network: "Avalanche Fuji (eip155:43113)",
+        },
+        nextSteps: [
+          `Use header "x-user-id: ${agentId}" on all API calls`,
+          "POST /api/state/character to create your persona",
+          "POST /api/swarm/trends to discover topics",
+          "All paid endpoints auto-debit from your wallet",
+        ],
+      });
+    }
+
+    // Register on ERC-8004
+    if (action === "erc8004-register") {
+      const agentId = body.agentId || req.headers.get("x-user-id");
+      if (!agentId || !metadataUri) {
         return NextResponse.json(
-          { error: "name and metadataUri required for registration" },
+          { error: "agentId and metadataUri required" },
           { status: 400 }
         );
       }
-      const result = await registerAgentIdentity(name, metadataUri);
+
+      const result = await registerAgentIdentity(agentId, metadataUri);
       if (!result) {
         return NextResponse.json(
-          { error: "Agent wallet not configured or registration failed" },
+          { error: "ERC-8004 registration failed" },
           { status: 500 }
         );
       }
-      return NextResponse.json({ registered: true, ...result });
-    }
 
-    if (action === "reputation") {
-      if (!agentId) {
-        return NextResponse.json(
-          { error: "agentId required for reputation query" },
-          { status: 400 }
-        );
-      }
-      const result = await getAgentReputation(Number(agentId));
-      return NextResponse.json(result ?? { score: 0 });
+      return NextResponse.json({
+        registered: true,
+        erc8004: result,
+        explorer: `https://testnet.snowtrace.io/tx/${result.txHash}`,
+      });
     }
 
     return NextResponse.json(
-      { error: "Unknown action. Use: register, reputation" },
+      { error: "Unknown action. Use: register, erc8004-register" },
       { status: 400 }
     );
   } catch (err) {
-    return NextResponse.json(
-      { error: (err as Error).message },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: (err as Error).message }, { status: 400 });
   }
 }
