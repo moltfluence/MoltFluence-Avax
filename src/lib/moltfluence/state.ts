@@ -62,7 +62,63 @@ class FileAdapter implements StateAdapter {
   }
 }
 
+/**
+ * Neon Postgres adapter — stores the entire state document as a single
+ * JSON row in a `moltfluence_state` table. Auto-creates the table on
+ * first read. Works perfectly with Vercel serverless (no /tmp issues).
+ */
+class NeonAdapter implements StateAdapter {
+  private initialized = false;
+
+  private async getPool() {
+    const { neon } = await import("@neondatabase/serverless");
+    const sql = neon(process.env.DATABASE_URL!);
+    return sql;
+  }
+
+  private async ensureTable() {
+    if (this.initialized) return;
+    const sql = await this.getPool();
+    await sql`CREATE TABLE IF NOT EXISTS moltfluence_state (
+      id TEXT PRIMARY KEY DEFAULT 'singleton',
+      doc JSONB NOT NULL,
+      updated_at TIMESTAMPTZ DEFAULT NOW()
+    )`;
+    this.initialized = true;
+  }
+
+  async read(): Promise<StateDocument> {
+    try {
+      await this.ensureTable();
+      const sql = await this.getPool();
+      const rows = await sql`SELECT doc FROM moltfluence_state WHERE id = 'singleton'`;
+      if (rows.length === 0) return makeDefaultDocument();
+      return normalizeDocument(rows[0].doc as StateDocument);
+    } catch (err) {
+      console.error("[state:neon] Read failed, returning default:", (err as Error).message);
+      return makeDefaultDocument();
+    }
+  }
+
+  async write(doc: StateDocument): Promise<void> {
+    const safeDoc = normalizeDocument(doc);
+    safeDoc.updatedAt = nowIso();
+    try {
+      await this.ensureTable();
+      const sql = await this.getPool();
+      await sql`INSERT INTO moltfluence_state (id, doc, updated_at)
+        VALUES ('singleton', ${JSON.stringify(safeDoc)}::jsonb, NOW())
+        ON CONFLICT (id) DO UPDATE SET doc = ${JSON.stringify(safeDoc)}::jsonb, updated_at = NOW()`;
+    } catch (err) {
+      console.error("[state:neon] Write failed:", (err as Error).message);
+    }
+  }
+}
+
 function getAdapter(): StateAdapter {
+  // Auto-detect: if DATABASE_URL is set, use Neon Postgres
+  if (process.env.DATABASE_URL) return new NeonAdapter();
+
   const adapter = (process.env.MOLTFLUENCE_STATE_ADAPTER ?? "file").toLowerCase();
   if (adapter === "memory") return new MemoryAdapter();
 
