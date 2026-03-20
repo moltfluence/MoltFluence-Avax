@@ -43,6 +43,7 @@ export async function GET(req: Request, context: { params: Promise<{ jobId: stri
     if (status === "completed") {
       const sourceImageUrl =
         taskData.output?.image_url ??
+        taskData.output?.image_urls?.[0] ??
         taskData.output?.image ??
         taskData.output?.images?.[0]?.url ??
         taskData.output?.images?.[0];
