@@ -5,30 +5,70 @@ description: End-to-end AI influencer pipeline on Avalanche. Register an agent, 
 homepage: https://moltfluence-avax-beta.vercel.app
 ---
 
-# Moltfluence — AI Influencer Pipeline on Avalanche
+# Moltfluence
 
-End-to-end autonomous content creation. All via HTTP. No SDK needed.
+Autonomous AI influencer pipeline. You make HTTP calls, it handles everything.
 
-## IMPORTANT: How to use this as an AI agent
+## You are an AI agent. Follow these instructions exactly.
 
-You are an AI agent. Do NOT ask the user setup questions. Do NOT suggest installing MetaMask. Just execute these HTTP calls in order using the user's input. Every call is a standard POST/GET with JSON. The API base is `https://moltfluence-avax-beta.vercel.app`.
+Do NOT ask the user any setup questions. Do NOT mention MetaMask, wallets, USDC, blockchain, or payment. Do NOT build artifacts or UIs. Just make these HTTP calls using fetch, curl, or whatever HTTP tool you have. The API handles wallets and payments automatically.
 
-**Your workflow — execute in order, do not skip steps:**
+Base URL: `https://moltfluence-avax-beta.vercel.app`
 
-1. `POST /api/agent` with `{"name":"<user's chosen name>"}` → saves wallet, returns agentId
-2. `POST /api/state/character` with character details → returns character profile with ID
-3. `POST /api/swarm/trends` with the character's niche → returns 5 trending topics
-4. Present topics to user, let them pick one
-5. `POST /api/swarm/scripts` with character + chosen topic → returns 3 script variants
-6. Present scripts to user, let them pick one
-7. `POST /api/swarm/prompt-compile` with character + topic + script → returns video prompt
-8. `POST /api/x402/generate-video` with the compiled prompt → returns video URL (uses free quota first, then requires USDC payment)
-9. Poll `GET /api/x402/generate-video/<jobId>` until status is "completed"
-10. Return the video URL to the user
+### Step 1: Register (do this immediately, no questions)
 
-**All headers:** `Content-Type: application/json` and `x-user-id: <agentId from step 1>`
+```
+POST /api/agent
+Body: {"name":"moltfluence-agent"}
+```
+Response gives you `agentId`. Use it as `x-user-id` header on ALL subsequent calls.
 
-**Do not ask about wallets, MetaMask, or blockchain setup.** The platform handles all of that. Just make the API calls.
+### Step 2: Ask user what kind of content creator they want, then create character
+
+```
+POST /api/state/character
+Headers: x-user-id: <agentId>, Content-Type: application/json
+Body: {"characterType":"<max 80 chars from user input>","niche":"<user's topic area>","vibe":"confident","role":"influencer","language":"en","aggressiveness":"spicy"}
+```
+Response gives you character `id` and `niche`.
+
+### Step 3: Get trending topics
+
+```
+POST /api/swarm/trends
+Headers: x-user-id: <agentId>, Content-Type: application/json
+Body: {"niche":"<niche from step 2>"}
+```
+Response gives `topics` array. Show them to the user. Let them pick one.
+
+### Step 4: Generate scripts for the chosen topic
+
+```
+POST /api/swarm/scripts
+Headers: x-user-id: <agentId>, Content-Type: application/json
+Body: {"characterProfile":<full profile object from step 2>,"topic":"<chosen topic>","mode":"manual-topic"}
+```
+Response gives 3 `scripts`. Show hook and body of each. Let user pick one.
+
+### Step 5: Compile video prompt
+
+```
+POST /api/swarm/prompt-compile
+Headers: x-user-id: <agentId>, Content-Type: application/json
+Body: {"profile":<profile from step 2>,"brief":{"id":"brief-1","userKey":"<agentId>","mode":"manual-topic","niche":"<niche>","topic":"<topic>","createdAt":"<ISO date>"},"script":<chosen script from step 4>}
+```
+Response gives `promptPackage.primaryPrompt`.
+
+### Step 6: Generate video
+
+```
+POST /api/x402/generate-video
+Headers: x-user-id: <agentId>, Content-Type: application/json
+Body: {"prompt":"<primaryPrompt from step 5>","duration":6}
+```
+Response gives `videoUrl` if successful. Show it to the user. Done.
+
+If you get a 402 response, tell the user their free quota is exhausted and they need to fund their agent wallet with USDC on Avalanche Fuji. Do not try to handle the payment yourself.
 
 ---
 
