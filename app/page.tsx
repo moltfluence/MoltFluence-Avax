@@ -31,7 +31,7 @@ export default function HomePage() {
             and <span className="text-[#ffcc00]">posts.</span>
           </h1>
           <p className="mt-10 text-xl text-neutral-400 max-w-lg leading-relaxed">
-            Give your bot a personality. It finds trending topics, writes a script, generates the video, and publishes to Instagram. Pays per video in USDC on Avalanche.
+            One API. Trending topics to published Reel. Pays per video in USDC.
           </p>
           <div className="mt-12 flex flex-wrap gap-5">
             <Link href="/pipeline" className="bg-[#ff0000] px-10 py-5 text-lg font-black uppercase tracking-wider transition hover:brightness-110">
@@ -82,31 +82,31 @@ export default function HomePage() {
 
         <div className="mt-20 grid grid-cols-1 md:grid-cols-2 gap-x-20 gap-y-24 max-w-6xl">
           <div className="group">
-            <span className="text-8xl font-black text-neutral-900 group-hover:text-[#ff0000]/20 transition-colors">01</span>
+            <span className="text-8xl font-black text-neutral-800 group-hover:text-[#ff0000]/20 transition-colors">01</span>
             <h3 className="text-2xl font-black uppercase tracking-tight mt-4 mb-4">Pick a face</h3>
             <p className="text-neutral-400 leading-relaxed">
-              Name your creator. Choose their energy — confident, chaotic, zen. The platform generates a portrait and remembers that identity across every video.
+              Name it. Give it a vibe. Portrait generated, identity locked.
             </p>
           </div>
           <div className="group">
-            <span className="text-8xl font-black text-neutral-900 group-hover:text-[#ffcc00]/20 transition-colors">02</span>
+            <span className="text-8xl font-black text-neutral-800 group-hover:text-[#ffcc00]/20 transition-colors">02</span>
             <h3 className="text-2xl font-black uppercase tracking-tight mt-4 mb-4">See what&apos;s happening now</h3>
             <p className="text-neutral-400 leading-relaxed">
-              The pipeline pulls live conversations from Reddit, HackerNews, and the web. Not recycled listicles — what people are actually talking about in the last 24 hours.
+              Live from Reddit, HackerNews, and the web. What people are talking about right now.
             </p>
           </div>
           <div className="group">
-            <span className="text-8xl font-black text-neutral-900 group-hover:text-[#0d0df2]/20 transition-colors">03</span>
+            <span className="text-8xl font-black text-neutral-800 group-hover:text-[#0d0df2]/20 transition-colors">03</span>
             <h3 className="text-2xl font-black uppercase tracking-tight mt-4 mb-4">Three scripts, your voice</h3>
             <p className="text-neutral-400 leading-relaxed">
-              A hot take, a breakdown, and a story. Each one written in your character&apos;s personality — not generic fill-in-the-blank templates.
+              Hot take, breakdown, and story. Written in your character&apos;s voice.
             </p>
           </div>
           <div className="group">
-            <span className="text-8xl font-black text-neutral-900 group-hover:text-[#ff0000]/20 transition-colors">04</span>
+            <span className="text-8xl font-black text-neutral-800 group-hover:text-[#ff0000]/20 transition-colors">04</span>
             <h3 className="text-2xl font-black uppercase tracking-tight mt-4 mb-4">Video out. Reel up.</h3>
             <p className="text-neutral-400 leading-relaxed">
-              A 6-second clip with audio. Captions burned in. Published straight to Instagram as a Reel. The payment clears on Avalanche before the video finishes uploading.
+              6-second clip with audio and captions. Published to Instagram. Payment settled on Avalanche.
             </p>
           </div>
         </div>
@@ -121,7 +121,7 @@ export default function HomePage() {
               Your agent<br />talks to ours<br />over HTTP.
             </h2>
             <p className="mt-6 text-neutral-400 text-lg leading-relaxed max-w-md">
-              No SDK to install. No OAuth. No dashboard. Register your agent, get a wallet, and hit the API. Works from a Telegram bot, a cron job, a LangChain agent, or a plain curl command.
+              No SDK. No OAuth. Register, get a wallet, hit the API.
             </p>
           </div>
           <div className="bg-black p-8 font-mono text-sm border border-neutral-800">
@@ -154,7 +154,7 @@ export default function HomePage() {
             Pay when you publish.
           </h2>
           <p className="mt-4 text-neutral-400 text-lg max-w-xl">
-            No subscription. No prepaid credits. Each action has a flat cost in USDC. Your agent&apos;s wallet gets charged only when work is done.
+            No subscription. Flat cost per action in USDC.
           </p>
         </div>
 
@@ -186,29 +186,29 @@ export default function HomePage() {
             Every dollar on-chain.<br />Every video provable.
           </h2>
           <p className="mt-6 text-neutral-400 text-lg max-w-2xl leading-relaxed">
-            When your agent pays for a video, the transaction settles on Avalanche in under 2 seconds. The receipt — who paid, how much, what was generated — gets signed by Avalanche validators and broadcast across the network. Any app on any Avalanche chain can check if a piece of content is real.
+            Payments settle in under 2 seconds. Receipts are signed by validators. Any app on Avalanche can verify it.
           </p>
 
           <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-12">
             <div>
               <div className="h-1 w-12 bg-[#ff0000] mb-6" />
               <h3 className="text-xl font-black uppercase tracking-tight mb-3">Agent gets its own wallet</h3>
-              <p className="text-neutral-500 text-sm leading-relaxed">
-                One API call to register. A dedicated wallet on Avalanche. Fund it with USDC. Every paid request charges that balance. Zero gas fees for the agent.
+            <p className="text-neutral-500 text-sm leading-relaxed">
+                Register → wallet created → fund with USDC → every call charges it. Zero gas.
               </p>
             </div>
             <div>
               <div className="h-1 w-12 bg-[#ffcc00] mb-6" />
               <h3 className="text-xl font-black uppercase tracking-tight mb-3">Payments you can audit</h3>
               <p className="text-neutral-500 text-sm leading-relaxed">
-                Not a Stripe invoice. An on-chain USDC transfer with the prompt hash, timestamp, and model baked in. Visible on Snowtrace, permanent, tamper-proof.
+                On-chain USDC transfer. Prompt hash, timestamp, model — all on Snowtrace.
               </p>
             </div>
             <div>
               <div className="h-1 w-12 bg-[#0d0df2] mb-6" />
               <h3 className="text-xl font-black uppercase tracking-tight mb-3">Proof that crosses chains</h3>
               <p className="text-neutral-500 text-sm leading-relaxed">
-                After generation, a signed message goes out across Avalanche networks. A gaming app, a DeFi dashboard, another agent — they can all verify: this content was made and paid for.
+                Signed and broadcast across Avalanche chains. Any app can verify the content is real.
               </p>
             </div>
           </div>
@@ -228,19 +228,19 @@ export default function HomePage() {
           <div>
             <span className="text-sm font-bold uppercase tracking-widest text-[#ff0000]">Developers</span>
             <p className="mt-4 text-neutral-400 leading-relaxed">
-              You&apos;re building a Telegram bot or a custom agent that needs to post content. Plug in the API. Your bot handles the rest — you never touch a video editor.
+              Building a bot that needs to post content? Plug in the API.
             </p>
           </div>
           <div>
             <span className="text-sm font-bold uppercase tracking-widest text-[#ffcc00]">Brands</span>
             <p className="mt-4 text-neutral-400 leading-relaxed">
-              You manage multiple accounts. Set up an agent per brand. Each one has its own voice, its own topics, its own schedule. Pay only for what ships.
+              One agent per brand. Own voice, own schedule. Pay per post.
             </p>
           </div>
           <div>
             <span className="text-sm font-bold uppercase tracking-widest text-[#0d0df2]">Creators</span>
             <p className="mt-4 text-neutral-400 leading-relaxed">
-              You have takes but no time to edit. Define your character. The pipeline writes in your voice and generates the video. You review and post.
+              Got takes, no time to edit. Define your style once. Videos made for you.
             </p>
           </div>
         </div>
