@@ -53,6 +53,12 @@
     "attestation": "/api/x402/attestation",
     "instagramAuth": "/api/auth/instagram",
     "instagramStatus": "/api/auth/instagram/status",
-    "agentRegistration": "/api/.well-known/agent-registration"
+    "agentRegistration": "/api/.well-known/agent-registration",
+    "agentWallet": "/api/agent"
+  },
+  "mcp": {
+    "description": "MCP server exposing 11 tools for the full pipeline. Install: cd mcp-server && npm install && npm run build",
+    "transport": "stdio",
+    "command": "node mcp-server/build/index.js"
   }
 }

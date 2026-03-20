@@ -162,8 +162,21 @@ Just use that platform's x402 payment tool to handle the 402 challenge. You don'
 | SkyReels V2 | `skyreels-v2` | $0.15 | $0.15 | Cheapest rapid variants |
 | Wan 2.6 | `wan-2.6` | $0.60 (5s) | $2.40 (20s) | Best quality up to 20s |
 
+### Agent Wallet (recommended)
+
+Instead of managing `EVM_PRIVATE_KEY` yourself, register via the agent wallet API:
+
+```bash
+# Register and get a wallet provisioned on Avalanche Fuji
+curl -X POST ${API_BASE}/api/agent -H "Content-Type: application/json" -d '{"name":"MyAgent"}'
+# Returns: { agentId: "myagent", wallet: { address: "0x...", funded: false } }
+# Fund the wallet by sending USDC to the address on Avalanche Fuji
+# Then use x-user-id: myagent on all calls — paid endpoints auto-debit from your wallet
+```
+
 ### Error handling
-- If `EVM_PRIVATE_KEY` is missing when `402` occurs, ask for wallet configuration and stop at that step.
+- If `402` occurs and agent wallet has no USDC, tell user to fund wallet with USDC on Avalanche Fuji.
+- If `EVM_PRIVATE_KEY` is set (custom wallet mode), use `payFetch` instead of agent wallet.
 - If `insufficient funds`, tell user to fund wallet with USDC on Avalanche testnet.
 - If `payFetch` throws after retries, wait 30 seconds and try again. Do not give up.
 - Check `GET ${API_BASE}/api/x402/info` for current network and facilitator details.
