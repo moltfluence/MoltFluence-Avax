@@ -18,3 +18,5 @@ contracts/out/
 contracts/cache/
 contracts/lib/
 contracts/broadcast/
+mcp-server/node_modules/
+mcp-server/build/
