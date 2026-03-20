@@ -55,15 +55,12 @@ export const ltxAdapter: VideoGenAdapter = {
     // LTX returns MP4 bytes directly — upload to VPS if configured, else use Vercel Blob
     const mp4Buffer = await res.arrayBuffer();
 
-    // Try VPS upload first
-    try {
-      const vpsUrl = await uploadToVps(new Uint8Array(mp4Buffer));
-      return vpsUrl;
-    } catch {
-      // VPS not configured — try Vercel Blob
-    }
-
-    throw new Error("Video generated but no storage configured. Set CAPTION_SERVICE_URL or BLOB_READ_WRITE_TOKEN.");
+    // Upload to VPS, return HTTPS proxy URL
+    const vpsUrl = await uploadToVps(new Uint8Array(mp4Buffer));
+    // Replace raw VPS URL with HTTPS proxy through Vercel
+    const filename = vpsUrl.split("/").pop();
+    const appBase = process.env.NEXT_PUBLIC_URL || "https://moltfluence-avax-beta.vercel.app";
+    return `${appBase}/api/media/${filename}`;
 
   },
 
