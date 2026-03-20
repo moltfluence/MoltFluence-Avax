@@ -65,7 +65,7 @@ export default function PipelinePage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          characterType: `${charName}. ${charBio}`,
+          characterType: `${charName}. ${charBio}`.slice(0, 80),
           niche,
           vibe,
           role: "influencer",
