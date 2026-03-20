@@ -561,7 +561,7 @@ export default function PipelinePage() {
                         {character?.imageUrl ? (
                           <img
                             src={character.imageUrl}
-                            className="w-full h-full object-cover grayscale contrast-125"
+                            className="w-full h-full object-cover"
                             alt="Character"
                           />
                         ) : (
