@@ -262,35 +262,30 @@ export default function PipelinePage() {
         return;
       }
 
-      // ── Step 4: Free quota exhausted — do direct USDC transfer via MetaMask ──
+      // ── Step 4: Free quota exhausted — direct USDC transfer via MetaMask ──
+      // Uses ethers.js BrowserProvider + Contract per Avalanche docs:
+      // "interact with USDC using standard Web3 libraries like ethers.js"
+      // Ref: https://build.avax.network/integrations/circlepay
       setLoading("Approving USDC Payment...");
 
       const USDC_ADDRESS = "0x5425890298aed601595a70AB815c96711a31Bc65";
       const TREASURY = "0xa8b17F22A7c71F6E12D741Ef4a342A793c74ce6c";
       const amountUsdc = videoDuration <= 8 ? 240000 : 400000; // $0.24 (6s) or $0.40 (10s)
 
-      // Register USDC token in MetaMask so it shows name + decimals
-      try {
-        await provider.request({
-          method: "wallet_watchAsset",
-          params: { type: "ERC20", options: { address: USDC_ADDRESS, symbol: "USDC", decimals: 6 } },
-        });
-      } catch { /* user may decline, that's ok */ }
+      const { BrowserProvider, Contract } = await import("ethers");
+      const ethersProvider = new BrowserProvider(provider);
+      const signer = await ethersProvider.getSigner();
 
-      // ABI encode: transfer(address to, uint256 amount)
-      // function selector for transfer(address,uint256) = 0xa9059cbb
-      const toParam = TREASURY.slice(2).toLowerCase().padStart(64, "0");
-      const amountParam = amountUsdc.toString(16).padStart(64, "0");
-      const transferData = "0xa9059cbb" + toParam + amountParam;
+      const usdc = new Contract(
+        USDC_ADDRESS,
+        ["function transfer(address to, uint256 amount) returns (bool)", "function symbol() view returns (string)", "function decimals() view returns (uint8)"],
+        signer
+      );
 
-      const txHash = await provider.request({
-        method: "eth_sendTransaction",
-        params: [{
-          from: address,
-          to: USDC_ADDRESS,
-          data: transferData,
-        }],
-      });
+      const tx = await usdc.transfer(TREASURY, amountUsdc);
+      setLoading("Waiting for confirmation...");
+      const receipt = await tx.wait();
+      const txHash = receipt.hash;
 
       setLoading("Payment confirmed. Generating video...");
 
