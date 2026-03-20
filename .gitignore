@@ -20,4 +20,4 @@ contracts/lib/
 contracts/broadcast/
 mcp-server/node_modules/
 mcp-server/build/
-mcp-server/
+.env*.local
