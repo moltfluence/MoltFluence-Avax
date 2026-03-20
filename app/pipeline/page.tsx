@@ -75,8 +75,10 @@ export default function PipelinePage() {
   const [scripts, setScripts] = useState<Script[]>([]);
   const [selectedTopic, setSelectedTopic] = useState("");
   const [compiledPrompt, setCompiledPrompt] = useState("");
+  const [generatedVideoUrl, setGeneratedVideoUrl] = useState<string | null>(null);
+  const [paymentTxHash, setPaymentTxHash] = useState<string | null>(null);
 
-  const steps = ["Identity", "Market", "Scripting", "Synthesis"];
+  const steps = ["Identity", "Market", "Scripting", "Synthesis", "Complete"];
 
   // 1. Create Character
   const handleCreateIdentity = async () => {
@@ -161,7 +163,11 @@ export default function PipelinePage() {
       const res = await fetch(`${API_BASE}/api/swarm/trends`, {
         method: "POST",
         headers: apiHeaders(),
-        body: JSON.stringify({ niche: character?.niche }),
+        body: JSON.stringify({
+          niche: character?.characterType
+            ? `${character.niche} — focus on: ${character.characterType}`
+            : character?.niche,
+        }),
       });
       const data = await res.json();
       setTopics(data.topics || []);
@@ -270,8 +276,8 @@ export default function PipelinePage() {
 
       if (freeRes.ok) {
         const data = await freeRes.json();
-        alert(`Video generated (free quota)!\nJob ID: ${data.jobId}`);
-        setStep(1);
+        setGeneratedVideoUrl(data.videoUrl ?? null);
+        setStep(5);
         return;
       }
 
@@ -315,8 +321,9 @@ export default function PipelinePage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Generation failed");
 
-      alert(`Payment confirmed on Avalanche Fuji!\nTx: ${txHash}\nVideo Job ID: ${data.jobId}\n\nhttps://testnet.snowtrace.io/tx/${txHash}`);
-      setStep(1);
+      setGeneratedVideoUrl(data.videoUrl ?? null);
+      setPaymentTxHash(txHash);
+      setStep(5);
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -819,6 +826,65 @@ export default function PipelinePage() {
                         Back to Script
                       </button>
                     </div>
+                  </div>
+                </div>
+              )}
+
+              {/* ═══════════════════════ STEP 5: COMPLETE ═══════════════════════ */}
+              {step === 5 && (
+                <div className="max-w-3xl mx-auto py-16 px-6 flex flex-col items-center gap-10 text-center">
+                  <div className="w-20 h-20 bg-[#0d0df2] flex items-center justify-center">
+                    <span className="text-3xl text-white">✓</span>
+                  </div>
+                  <h2 className="text-4xl font-black uppercase tracking-tighter">Video Generated</h2>
+
+                  {generatedVideoUrl && (
+                    <div className="w-full max-w-lg">
+                      <video
+                        src={generatedVideoUrl}
+                        controls
+                        className="w-full border-2 border-slate-700"
+                        autoPlay
+                        muted
+                      />
+                      <a
+                        href={generatedVideoUrl}
+                        target="_blank"
+                        rel="noopener"
+                        className="mt-4 inline-block text-sm text-[#0d0df2] font-bold uppercase tracking-widest hover:underline"
+                      >
+                        Open Full Video ↗
+                      </a>
+                    </div>
+                  )}
+
+                  {paymentTxHash && (
+                    <div className="text-left w-full max-w-lg bg-slate-900/50 p-6">
+                      <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold mb-2">Avalanche Transaction</p>
+                      <a
+                        href={`https://testnet.snowtrace.io/tx/${paymentTxHash}`}
+                        target="_blank"
+                        rel="noopener"
+                        className="text-sm text-[#0d0df2] font-mono break-all hover:underline"
+                      >
+                        {paymentTxHash}
+                      </a>
+                    </div>
+                  )}
+
+                  <div className="flex gap-6 pt-4">
+                    <button
+                      className="bg-[#ff3b30] text-white py-4 px-8 font-black uppercase tracking-wider hover:bg-red-700 transition"
+                      onClick={() => { setStep(2); setGeneratedVideoUrl(null); setPaymentTxHash(null); }}
+                    >
+                      Create Another
+                    </button>
+                    <button
+                      className="text-slate-400 py-4 px-8 font-bold uppercase tracking-widest hover:text-white transition"
+                      onClick={() => { setStep(1); setCharacter(null); setTopics([]); setScripts([]); setGeneratedVideoUrl(null); setPaymentTxHash(null); }}
+                    >
+                      New Character
+                    </button>
                   </div>
                 </div>
               )}
