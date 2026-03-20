@@ -108,7 +108,7 @@ export default function PipelinePage() {
       const imgRes = await fetch(`${API_BASE}/api/x402/generate-image`, {
         method: "POST",
         headers: apiHeaders(),
-        body: JSON.stringify({ prompt: imgPrompt, model: "flux-schnell", characterId: profile.id }),
+        body: JSON.stringify({ prompt: imgPrompt, model: "flux-dev", characterId: profile.id }),
       });
       const imgData = await imgRes.json();
 
