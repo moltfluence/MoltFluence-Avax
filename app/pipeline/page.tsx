@@ -62,6 +62,7 @@ export default function PipelinePage() {
   // Form States
   const [charName, setCharName] = useState("");
   const [charBio, setCharBio] = useState("");
+  const [charLook, setCharLook] = useState("");
   const [niche, setNiche] = useState("crypto");
   const [vibe, setVibe] = useState("confident");
 
@@ -97,16 +98,26 @@ export default function PipelinePage() {
 
       const profile = data.profile;
 
-      // Auto-trigger portrait
+      // Auto-trigger portrait using flux-schnell (fastest, most reliable)
       setLoading("Visualizing Persona...");
+      const imgPrompt = charLook
+        ? `${charLook}. Portrait, cinematic lighting, 8k, photorealistic.`
+        : profile.imagePrompt || `A ${profile.vibe} ${profile.niche} influencer, portrait, cinematic lighting, 8k`;
       const imgRes = await fetch(`${API_BASE}/api/x402/generate-image`, {
         method: "POST",
         headers: apiHeaders(),
-        body: JSON.stringify({ prompt: profile.imagePrompt, characterId: profile.id }),
+        body: JSON.stringify({ prompt: imgPrompt, model: "flux-schnell", characterId: profile.id }),
       });
       const imgData = await imgRes.json();
 
-      if (imgData.error) throw new Error(imgData.error);
+      if (imgData.error) {
+        // Image gen failed — continue without portrait
+        console.warn("Portrait generation failed:", imgData.error);
+        setCharacter({ ...profile, name: charName });
+        setLoading(null);
+        setStep(2);
+        return;
+      }
 
       // Poll for image
       let attempts = 0;
@@ -475,6 +486,17 @@ export default function PipelinePage() {
                             <option value="calm" className="bg-[#101022]">Zen Architect</option>
                           </select>
                         </div>
+                      </div>
+                      <div className="flex flex-col gap-2">
+                        <label className="text-[10px] uppercase font-black tracking-widest text-[#0d0df2]">
+                          Appearance (optional)
+                        </label>
+                        <input
+                          className="bg-transparent border-2 border-slate-700 p-3 font-bold focus:border-[#0d0df2] focus:ring-0 outline-none text-sm text-slate-100"
+                          placeholder="e.g. Young woman with short blue hair, cyberpunk style..."
+                          value={charLook}
+                          onChange={(e) => setCharLook(e.target.value)}
+                        />
                       </div>
                       <button
                         className="mt-4 bg-[#ff3b30] text-white py-5 px-8 font-black uppercase text-xl hover:bg-red-700 transition-colors flex items-center justify-between group disabled:opacity-50 disabled:cursor-not-allowed"
