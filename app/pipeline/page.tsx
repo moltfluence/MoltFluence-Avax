@@ -63,7 +63,9 @@ export default function PipelinePage() {
   const [charName, setCharName] = useState("");
   const [charBio, setCharBio] = useState("");
   const [charLook, setCharLook] = useState("");
-  const [niche, setNiche] = useState("crypto");
+  const [nicheSelect, setNicheSelect] = useState("crypto");
+  const [customNiche, setCustomNiche] = useState("");
+  const niche = nicheSelect === "custom" ? customNiche : nicheSelect;
   const [vibe, setVibe] = useState("confident");
 
   // Pipeline Data
@@ -464,13 +466,25 @@ export default function PipelinePage() {
                           </label>
                           <select
                             className="bg-transparent border-2 border-slate-700 p-3 font-bold focus:border-[#0d0df2] focus:ring-0 outline-none uppercase text-sm appearance-none text-slate-100"
-                            value={niche}
-                            onChange={(e) => setNiche(e.target.value)}
+                            value={nicheSelect}
+                            onChange={(e) => setNicheSelect(e.target.value)}
                           >
-                            <option value="crypto" className="bg-[#101022]">Avalanche Ecosystem</option>
-                            <option value="tech" className="bg-[#101022]">AI Infrastructure</option>
-                            <option value="lifestyle" className="bg-[#101022]">Neon Future</option>
+                            <option value="crypto" className="bg-[#101022]">Crypto & Web3</option>
+                            <option value="tech" className="bg-[#101022]">Tech & AI</option>
+                            <option value="finance" className="bg-[#101022]">Finance & Trading</option>
+                            <option value="lifestyle" className="bg-[#101022]">Lifestyle & Culture</option>
+                            <option value="gaming" className="bg-[#101022]">Gaming</option>
+                            <option value="fitness" className="bg-[#101022]">Fitness & Health</option>
+                            <option value="custom" className="bg-[#101022]">Custom (type below)</option>
                           </select>
+                          {nicheSelect === "custom" && (
+                            <input
+                              className="bg-transparent border-2 border-slate-700 p-3 font-bold focus:border-[#0d0df2] focus:ring-0 outline-none text-sm text-slate-100 mt-2"
+                              placeholder="e.g. Korean skincare, indie music, street food..."
+                              value={customNiche}
+                              onChange={(e) => setCustomNiche(e.target.value)}
+                            />
+                          )}
                         </div>
                         <div className="flex flex-col gap-2">
                           <label className="text-[10px] uppercase font-black tracking-widest text-[#0d0df2]">
