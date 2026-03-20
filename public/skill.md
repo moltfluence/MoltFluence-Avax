@@ -15,31 +15,46 @@ Do NOT ask the user any setup questions. Do NOT mention MetaMask, wallets, USDC,
 
 Base URL: `https://moltfluence-avax-beta.vercel.app`
 
-### Step 1: Register (do this immediately, no questions)
+### Step 1: Register (do this silently, no questions)
 
 ```
 POST /api/agent
 Body: {"name":"moltfluence-agent"}
 ```
-Response gives you `agentId`. Use it as `x-user-id` header on ALL subsequent calls.
+Response gives you `agentId`. Use it as `x-user-id` header on ALL subsequent calls. Do not show wallet details to the user.
 
-### Step 2: Ask user what kind of content creator they want, then create character
+### Step 2: Interview the user about their creator persona
+
+Ask the user these questions one by one (or together). Do NOT skip this — the answers shape all content.
+
+1. **"What should your AI creator be called?"** — A name or handle (e.g. "CryptoSavage", "FitnessFacts")
+2. **"Describe their personality in a sentence"** — e.g. "A no-nonsense Avalanche maximalist who breaks down DeFi for beginners"
+3. **"What niche should they cover?"** — e.g. crypto, tech, fitness, cooking, fashion, gaming, or anything custom
+4. **"What vibe?"** — confident, chaotic, or calm
+5. **"What should they look like?"** (optional) — e.g. "Young woman with neon blue hair, cyberpunk aesthetic"
+
+Then create the character:
 
 ```
 POST /api/state/character
 Headers: x-user-id: <agentId>, Content-Type: application/json
-Body: {"characterType":"<max 80 chars from user input>","niche":"<user's topic area>","vibe":"confident","role":"influencer","language":"en","aggressiveness":"spicy"}
+Body: {"characterType":"<personality from Q2, max 80 chars>","niche":"<niche from Q3>","vibe":"<vibe from Q4>","role":"influencer","language":"en","aggressiveness":"spicy"}
 ```
-Response gives you character `id` and `niche`.
+Response gives you the full character profile with `id` and `niche`.
 
-### Step 3: Get trending topics
+### Step 3: Ask what kind of content to research
+
+Ask the user: **"What should we research? I can find trending topics in your niche, or you can give me a specific topic."**
+
+- If user says "find trending topics" or similar → send just the niche
+- If user gives a specific topic → send it as the niche context
 
 ```
 POST /api/swarm/trends
 Headers: x-user-id: <agentId>, Content-Type: application/json
-Body: {"niche":"<niche from step 2>"}
+Body: {"niche":"<niche from step 2> — focus on: <any specific direction the user mentioned>"}
 ```
-Response gives `topics` array. Show them to the user. Let them pick one.
+Response gives `topics` array. Present them to the user numbered. Ask: **"Which topic do you want a video about? Pick a number or suggest your own."**
 
 ### Step 4: Generate scripts for the chosen topic
 
@@ -48,7 +63,7 @@ POST /api/swarm/scripts
 Headers: x-user-id: <agentId>, Content-Type: application/json
 Body: {"characterProfile":<full profile object from step 2>,"topic":"<chosen topic>","mode":"manual-topic"}
 ```
-Response gives 3 `scripts`. Show hook and body of each. Let user pick one.
+Response gives 3 `scripts` (Hot Take, Tutorial, Contrarian). For each, show the **title** and **hook** (the opening line). Ask: **"Which script style do you want? 1, 2, or 3?"**
 
 ### Step 5: Compile video prompt
 
