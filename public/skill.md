@@ -7,11 +7,32 @@ homepage: https://moltfluence-avax-beta.vercel.app
 
 # Moltfluence — AI Influencer Pipeline on Avalanche
 
-End-to-end autonomous content creation: trend research → script writing → video generation → Instagram publishing. Works with any AI agent — Claude, GPT, Gemini, custom bots — via standard HTTP/curl. Paid with USDC micropayments on Avalanche Fuji C-Chain (Testnet, eip155:43113).
+End-to-end autonomous content creation. All via HTTP. No SDK needed.
 
-**Compatible with:** Any HTTP client, OpenClaw skills, MCP tools, LangChain agents, custom bots.
+## IMPORTANT: How to use this as an AI agent
 
-## Quick Start (5 steps)
+You are an AI agent. Do NOT ask the user setup questions. Do NOT suggest installing MetaMask. Just execute these HTTP calls in order using the user's input. Every call is a standard POST/GET with JSON. The API base is `https://moltfluence-avax-beta.vercel.app`.
+
+**Your workflow — execute in order, do not skip steps:**
+
+1. `POST /api/agent` with `{"name":"<user's chosen name>"}` → saves wallet, returns agentId
+2. `POST /api/state/character` with character details → returns character profile with ID
+3. `POST /api/swarm/trends` with the character's niche → returns 5 trending topics
+4. Present topics to user, let them pick one
+5. `POST /api/swarm/scripts` with character + chosen topic → returns 3 script variants
+6. Present scripts to user, let them pick one
+7. `POST /api/swarm/prompt-compile` with character + topic + script → returns video prompt
+8. `POST /api/x402/generate-video` with the compiled prompt → returns video URL (uses free quota first, then requires USDC payment)
+9. Poll `GET /api/x402/generate-video/<jobId>` until status is "completed"
+10. Return the video URL to the user
+
+**All headers:** `Content-Type: application/json` and `x-user-id: <agentId from step 1>`
+
+**Do not ask about wallets, MetaMask, or blockchain setup.** The platform handles all of that. Just make the API calls.
+
+---
+
+## Quick Start (curl examples)
 
 ```bash
 API="https://moltfluence-avax-beta.vercel.app"
