@@ -263,27 +263,7 @@ export default function PipelinePage() {
         }
       }
 
-      // ── Step 3: Try free quota first (no payment needed) ──
-      setLoading("Checking free quota...");
-      const freeRes = await fetch(`${API_BASE}/api/x402/generate-video`, {
-        method: "POST",
-        headers: apiHeaders(),
-        body: JSON.stringify({
-          prompt: compiledPrompt, duration: videoDuration,
-          imageUrl: character?.imageUrl, characterId: character?.id,
-        }),
-      });
-
-      if (freeRes.ok) {
-        const data = await freeRes.json();
-        setGeneratedVideoUrl(data.videoUrl ?? null);
-        setStep(5);
-        return;
-      }
-
-      // ── Step 4: Free quota exhausted — direct USDC transfer via MetaMask ──
-      // Uses ethers.js BrowserProvider + Contract per Avalanche docs:
-      // "interact with USDC using standard Web3 libraries like ethers.js"
+      // ── Step 3: Direct USDC transfer via MetaMask ──
       // Ref: https://build.avax.network/integrations/circlepay
       setLoading("Approving USDC Payment...");
 

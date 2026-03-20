@@ -254,7 +254,7 @@ export default function HomePage() {
             Stop editing.<br />Start shipping.
           </h2>
           <p className="mt-8 text-neutral-400 text-lg max-w-md mx-auto">
-            Three free videos. No wallet to set up. No account to create. Just call the API.
+            No wallet to set up. No account to create. Just call the API.
           </p>
           <div className="mt-12 flex flex-wrap items-center justify-center gap-5">
             <Link href="/pipeline" className="bg-[#ff0000] px-12 py-5 text-xl font-black uppercase tracking-wider transition hover:brightness-110">

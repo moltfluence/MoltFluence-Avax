@@ -56,16 +56,12 @@ export async function POST(req: Request): Promise<NextResponse> {
     let paid = false;
 
     if (!payment) {
-      // Try free quota first (same pattern as generate-video)
-      const consumed = await consumeFreeQuota(userKey, "basic", "ltx");
-      if (!consumed.usedFree) {
-        return x402PaymentRequired({
-          priceUsd: costUsd,
-          recipient: treasury,
-          description,
-          resourceUrl: resource,
-        });
-      }
+      return x402PaymentRequired({
+        priceUsd: costUsd,
+        recipient: treasury,
+        description,
+        resourceUrl: resource,
+      });
     } else {
       const verification = await verifyPaymentHeader({
         payment,

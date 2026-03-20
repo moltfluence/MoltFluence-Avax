@@ -79,23 +79,13 @@ export async function POST(req: Request): Promise<NextResponse> {
     let quotaUsed = 0;
     let paymentMeta: GenerationRecord["payment"] | undefined;
 
-    // For the Hackathon Demo, we WANT MetaMask to pop up here to prove Avalanche integration.
-    // So we still issue the 402 challenge, but the `facilitator/settle` route will bypass the
-    // on-chain broadcast later to save AVAX gas.
     if (!payment) {
-      const consumed = await consumeFreeQuota(userKey, "basic", DEFAULT_MODEL);
-      quotaState = consumed.quota;
-
-      if (!consumed.usedFree) {
-        return x402PaymentRequired({
-          priceUsd,
-          recipient: treasury,
-          description,
-          resourceUrl: resource,
-        });
-      }
-
-      quotaUsed = 1;
+      return x402PaymentRequired({
+        priceUsd,
+        recipient: treasury,
+        description,
+        resourceUrl: resource,
+      });
     } else {
       const verification = await verifyPaymentHeader({
         payment,
