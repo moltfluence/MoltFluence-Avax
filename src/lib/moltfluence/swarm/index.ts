@@ -3,16 +3,23 @@ import { lintVideoPrompt } from "@/lib/moltfluence/prompt-lint";
 import { RECOMMENDED_VIDEO_MODEL } from "@/lib/moltfluence/types";
 import type { CharacterProfile, ContentBrief, PromptPackage, ScriptDraft, VideoModel } from "@/lib/moltfluence/types";
 
-// Tavily for real-time web research
+// Tavily for real-time web research — direct fetch (no SDK, more reliable on serverless)
 async function tavilySearch(query: string): Promise<string> {
   const apiKey = process.env.TAVILY_API_KEY;
-  if (!apiKey) return "";
+  if (!apiKey) { console.error("[tavily] TAVILY_API_KEY not set"); return ""; }
 
   try {
-    const { tavily } = await import("@tavily/core");
-    const tvly = tavily({ apiKey });
-    const res = await tvly.search(query, { maxResults: 5 });
-    const results = (res as any).results ?? [];
+    const res = await fetch("https://api.tavily.com/search", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
+      body: JSON.stringify({ query, max_results: 5, topic: "news", time_range: "day", include_answer: true }),
+    });
+    if (!res.ok) {
+      console.error("[tavily] HTTP", res.status, await res.text().catch(() => ""));
+      return "";
+    }
+    const data = await res.json() as any;
+    const results = data.results ?? [];
     return results.map((r: any) => `${r.title}: ${r.content}`).join("\n\n");
   } catch (err) {
     console.error("[tavily] Search failed:", (err as Error).message);

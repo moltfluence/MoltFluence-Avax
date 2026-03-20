@@ -1,5 +1,5 @@
 const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
-const MODEL = "openrouter/aurora-alpha";
+const MODEL = "google/gemini-2.5-flash";
 
 interface Message {
   role: "system" | "user" | "assistant";
@@ -17,7 +17,7 @@ export async function chatCompletion(
   const apiKey = process.env.OPENROUTER_API_KEY;
   if (!apiKey) throw new Error("OPENROUTER_API_KEY is not set");
 
-  const timeoutMs = opts?.webSearch ? 25000 : 8000;
+  const timeoutMs = 15000;
 
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
@@ -36,7 +36,6 @@ export async function chatCompletion(
         model: MODEL,
         messages,
         ...(opts?.json ? { response_format: { type: "json_object" } } : {}),
-        ...(opts?.webSearch ? { plugins: [{ id: "web", max_results: 5 }] } : {}),
       }),
     });
 

@@ -66,6 +66,7 @@ export default function PipelinePage() {
   const [vibe, setVibe] = useState("confident");
 
   // Pipeline Data
+  const [videoDuration, setVideoDuration] = useState(6);
   const [character, setCharacter] = useState<CharacterProfile | null>(null);
   const [topics, setTopics] = useState<Topic[]>([]);
   const [scripts, setScripts] = useState<Script[]>([]);
@@ -249,7 +250,7 @@ export default function PipelinePage() {
         method: "POST",
         headers: apiHeaders(),
         body: JSON.stringify({
-          prompt: compiledPrompt, duration: 6,
+          prompt: compiledPrompt, duration: videoDuration,
           imageUrl: character?.imageUrl, characterId: character?.id,
         }),
       });
@@ -266,7 +267,8 @@ export default function PipelinePage() {
 
       const USDC_ADDRESS = "0x5425890298aed601595a70AB815c96711a31Bc65";
       const TREASURY = "0xa8b17F22A7c71F6E12D741Ef4a342A793c74ce6c";
-      const AMOUNT = "0x3A980"; // 240000 in hex = $0.24 USDC (6 decimals)
+      const amountUsdc = videoDuration <= 8 ? 240000 : 400000; // $0.24 (6s) or $0.40 (10s)
+      const AMOUNT = "0x" + amountUsdc.toString(16);
 
       // ERC-20 transfer(address,uint256) — function selector 0xa9059cbb
       const transferData = "0xa9059cbb"
@@ -290,7 +292,7 @@ export default function PipelinePage() {
         method: "POST",
         headers: apiHeaders({ "Payment-Signature": txHash }),
         body: JSON.stringify({
-          prompt: compiledPrompt, duration: 6,
+          prompt: compiledPrompt, duration: videoDuration,
           imageUrl: character?.imageUrl, characterId: character?.id,
         }),
       });
@@ -713,14 +715,30 @@ export default function PipelinePage() {
                     </div>
                   </div>
 
-                  {/* Cost & CTA */}
+                  {/* Duration Selector + Cost & CTA */}
                   <div className="flex flex-col items-center gap-6">
+                    {/* Duration toggle */}
+                    <div className="flex gap-0 border-2 border-slate-700">
+                      <button
+                        className={`px-8 py-3 text-sm font-black uppercase tracking-wider transition-colors ${videoDuration === 6 ? "bg-[#0d0df2] text-white" : "text-slate-500 hover:text-white"}`}
+                        onClick={() => setVideoDuration(6)}
+                      >
+                        6s — $0.24
+                      </button>
+                      <button
+                        className={`px-8 py-3 text-sm font-black uppercase tracking-wider transition-colors ${videoDuration === 10 ? "bg-[#0d0df2] text-white" : "text-slate-500 hover:text-white"}`}
+                        onClick={() => setVideoDuration(10)}
+                      >
+                        10s — $0.40
+                      </button>
+                    </div>
+
                     <div className="text-center">
                       <p className="text-2xl font-black text-[#ff3b30] uppercase tracking-wider">
-                        $0.24 USDC
+                        ${videoDuration <= 8 ? "0.24" : "0.40"} USDC
                       </p>
                       <p className="text-[10px] text-slate-500 uppercase tracking-[0.2em] font-bold mt-1">
-                        ERC-3009 Gasless Micropayment on Avalanche Fuji Testnet
+                        USDC transfer on Avalanche Fuji via MetaMask
                       </p>
                     </div>
 
