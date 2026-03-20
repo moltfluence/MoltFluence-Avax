@@ -161,6 +161,10 @@ export async function getCharacterProfile(userKey: string, characterId?: string)
   const doc = await getAdapter().read();
 
   if (characterId) {
+    // Wildcard userKey "*" = look up by characterId only (cross-session fallback)
+    if (userKey === "*") {
+      return doc.characters.find((c) => c.id === characterId) ?? null;
+    }
     return doc.characters.find((c) => c.id === characterId && c.userKey === userKey) ?? null;
   }
 

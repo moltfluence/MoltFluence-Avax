@@ -56,9 +56,11 @@ export async function POST(req: Request): Promise<NextResponse> {
     const url = new URL(req.url);
     const resource = `${url.origin}${url.pathname}`;
 
-    const characterProfile = payload.characterId ? await getCharacterProfile(userKey, payload.characterId) : null;
+    // Try with userKey first, then without (browser sessions may have different IPs)
+    let characterProfile = payload.characterId ? await getCharacterProfile(userKey, payload.characterId) : null;
     if (payload.characterId && !characterProfile) {
-      return NextResponse.json({ error: `Character profile not found: ${payload.characterId}` }, { status: 404 });
+      // Fallback: look up by characterId alone (ignoring userKey)
+      characterProfile = await getCharacterProfile("*", payload.characterId);
     }
 
     const referenceImageUrl = payload.imageUrl ?? characterProfile?.imageUrl;
