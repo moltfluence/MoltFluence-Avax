@@ -3,6 +3,23 @@ import { lintVideoPrompt } from "@/lib/moltfluence/prompt-lint";
 import { RECOMMENDED_VIDEO_MODEL } from "@/lib/moltfluence/types";
 import type { CharacterProfile, ContentBrief, PromptPackage, ScriptDraft, VideoModel } from "@/lib/moltfluence/types";
 
+// Tavily for real-time web research
+async function tavilySearch(query: string): Promise<string> {
+  const apiKey = process.env.TAVILY_API_KEY;
+  if (!apiKey) return "";
+
+  try {
+    const { tavily } = await import("@tavily/core");
+    const tvly = tavily({ apiKey });
+    const res = await tvly.search(query, { maxResults: 5 });
+    const results = (res as any).results ?? [];
+    return results.map((r: any) => `${r.title}: ${r.content}`).join("\n\n");
+  } catch (err) {
+    console.error("[tavily] Search failed:", (err as Error).message);
+    return "";
+  }
+}
+
 /* ------------------------------------------------------------------ */
 /*  harvestTrends — LLM-powered trend generation                      */
 /* ------------------------------------------------------------------ */
@@ -48,45 +65,21 @@ const TREND_BANK: Record<string, string[]> = {
 };
 
 export async function harvestTrends(niche: string, manualTopic?: string): Promise<TrendResult> {
-  if (manualTopic && manualTopic.trim()) {
-    try {
-      const { content: nicheContext } = await chatCompletion([
-        {
-          role: "system",
-          content: "You are a research assistant with web search access. Given a niche or brand name, you MUST base your response strictly on web search results. Do NOT invent or hallucinate information. If search results are sparse, say so and only report what you actually found. Cover: what it is, who it's for, key features/products, recent news/developments, community sentiment, and competitors. Write in plain text, 150-300 words. No JSON, no markdown.",
-        },
-        {
-          role: "user",
-          content: `Research this niche/brand thoroughly: "${niche}"`,
-        },
-      ], { webSearch: true });
+  const today = new Date().toISOString().slice(0, 10);
 
-      return { mode: "manual-topic", topics: [manualTopic.trim()], nicheContext, source: "manual" };
-    } catch {
-      return {
-        mode: "manual-topic",
-        topics: [manualTopic.trim()],
-        nicheContext: `Offline fallback context for niche "${niche}".`,
-        source: "manual",
-      };
-    }
+  if (manualTopic && manualTopic.trim()) {
+    // Tavily research on the manual topic
+    const tavilyContext = await tavilySearch(`${niche} ${manualTopic} latest news trends ${today}`);
+    const nicheContext = tavilyContext || `Context for "${niche}" topic: ${manualTopic}`;
+    return { mode: "manual-topic", topics: [manualTopic.trim()], nicheContext, source: "manual" };
   }
 
-  const today = new Date().toISOString().slice(0, 10);
   try {
-    // Step 1: Research the niche
-    const { content: nicheContext } = await chatCompletion([
-      {
-        role: "system",
-        content: "You are a research assistant with web search access. Given a niche or brand name, you MUST base your response strictly on web search results. Do NOT invent or hallucinate information. If search results are sparse, say so and only report what you actually found. Cover: what it is, who it's for, key features/products, recent news/developments, community sentiment, and competitors. Write in plain text, 150-300 words. No JSON, no markdown.",
-      },
-      {
-        role: "user",
-        content: `Date: ${today}\nResearch this niche/brand thoroughly: "${niche}"`,
-      },
-    ], { webSearch: true });
+    // Step 1: Tavily real-time web research
+    const tavilyContext = await tavilySearch(`${niche} trending topics latest news today ${today}`);
+    if (!tavilyContext) throw new Error("Tavily returned no results");
 
-    // Step 2: Generate topics grounded in the research
+    // Step 2: LLM generates topics grounded in Tavily research
     const { content } = await chatCompletion([
       {
         role: "system",
@@ -94,7 +87,7 @@ export async function harvestTrends(niche: string, manualTopic?: string): Promis
       },
       {
         role: "user",
-        content: `Date: ${today}\nNiche: ${niche}\n\nResearch context:\n${nicheContext}\n\nGenerate 5 trending, timely short-form video topic ideas based on this research.`,
+        content: `Date: ${today}\nNiche: ${niche}\n\nReal-time web research (via Tavily):\n${tavilyContext}\n\nGenerate 5 trending, timely short-form video topic ideas based on this research.`,
       },
     ], { json: true });
 
@@ -102,7 +95,7 @@ export async function harvestTrends(niche: string, manualTopic?: string): Promis
     const topics: string[] = Array.isArray(parsed.topics) ? parsed.topics.slice(0, 5) : [];
     if (topics.length === 0) throw new Error("LLM returned no topics");
 
-    return { mode: "auto-trends", topics, nicheContext, source: "llm" };
+    return { mode: "auto-trends", topics, nicheContext: tavilyContext, source: "llm" };
   } catch {
     return {
       mode: "auto-trends",

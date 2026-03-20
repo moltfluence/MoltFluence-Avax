@@ -11,6 +11,7 @@
     "@0xgasless/agent-sdk": "^0.1.2",
     "@neondatabase/serverless": "^1.0.2",
     "@tailwindcss/postcss": "^4.1.18",
+    "@tavily/core": "^0.7.2",
     "@x402/core": "^2.3.1",
     "@x402/evm": "^2.3.1",
     "@x402/fetch": "^2.3.0",
