@@ -1,9 +1,11 @@
 {
   "functions": {
-    "app/api/swarm/**/*.ts": { "maxDuration": 60 },
-    "app/api/x402/generate-video/**/*.ts": { "maxDuration": 60 },
-    "app/api/x402/generate-image/**/*.ts": { "maxDuration": 60 },
-    "app/api/agent/**/*.ts": { "maxDuration": 60 }
+    "app/api/swarm/trends/route.ts": { "maxDuration": 60 },
+    "app/api/swarm/scripts/route.ts": { "maxDuration": 60 },
+    "app/api/swarm/prompt-compile/route.ts": { "maxDuration": 60 },
+    "app/api/x402/generate-video/route.ts": { "maxDuration": 60 },
+    "app/api/x402/generate-image/route.ts": { "maxDuration": 60 },
+    "app/api/agent/route.ts": { "maxDuration": 60 }
   },
   "crons": [
     {
