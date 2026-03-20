@@ -23,8 +23,8 @@ const IMAGE_MODELS = supportedImageModels() as [string, ...string[]];
 
 const generateSchema = z.object({
   prompt: z.string().min(3).max(2000),
-  model: z.enum(IMAGE_MODELS).optional().default("flux-dev"),
-  aspectRatio: z.enum(["9:16", "16:9", "1:1"]).optional().default("9:16"),
+  model: z.enum(IMAGE_MODELS).optional().default("gemini"),
+  aspectRatio: z.enum(["9:16", "16:9", "1:1"]).optional().default("1:1"),
   style: z.string().optional(),
   characterId: z.string().optional(),
 });

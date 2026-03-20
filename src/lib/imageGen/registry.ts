@@ -3,8 +3,10 @@ import { fluxSchnellAdapter } from "./flux-schnell";
 import { fluxDevAdapter } from "./flux-dev";
 import { fluxDevAdvancedAdapter } from "./flux-dev-advanced";
 import { midjourneyAdapter } from "./midjourney";
+import { geminiAdapter } from "./gemini";
 
 const adapters: ImageGenAdapter[] = [
+  geminiAdapter,
   fluxSchnellAdapter,
   fluxDevAdapter,
   fluxDevAdvancedAdapter,

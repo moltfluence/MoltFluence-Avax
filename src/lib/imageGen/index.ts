@@ -4,3 +4,4 @@ export { fluxSchnellAdapter } from "./flux-schnell";
 export { fluxDevAdapter } from "./flux-dev";
 export { fluxDevAdvancedAdapter } from "./flux-dev-advanced";
 export { midjourneyAdapter } from "./midjourney";
+export { geminiAdapter } from "./gemini";
