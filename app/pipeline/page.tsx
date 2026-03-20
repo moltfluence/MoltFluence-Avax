@@ -213,187 +213,92 @@ export default function PipelinePage() {
   };
 
   const executeVideoGeneration = async () => {
-    setLoading("Negotiating Avalanche Settlement...");
+    setLoading("Connecting Wallet...");
     try {
-      // ── Step 1: Connect wallet ──────────────────────────────────────
-      // Find the real MetaMask provider, ignoring Phantom/other wallets
+      // ── Step 1: Connect MetaMask ──
       let provider: any = (window as any).ethereum;
-
-      if (!provider) {
-        throw new Error("MetaMask is required for Avalanche x402 settlement.");
-      }
-
+      if (!provider) throw new Error("MetaMask required.");
       if (provider.providers?.length) {
         provider = provider.providers.find((p: any) => p.isMetaMask) || provider.providers[0];
       }
 
-      const accounts = await provider.request({ method: 'eth_requestAccounts' });
+      const accounts = await provider.request({ method: "eth_requestAccounts" });
       const address = accounts[0];
 
-      // ── Step 2: Switch to Avalanche Fuji (eip155:43113) ────────────
-      // Ref: https://build.avax.network/academy/blockchain/x402-payment-infrastructure/04-x402-on-avalanche/02-network-setup
+      // ── Step 2: Switch to Avalanche Fuji ──
       try {
-        await provider.request({
-          method: 'wallet_switchEthereumChain',
-          params: [{ chainId: '0xa869' }], // 43113 in hex
-        });
-      } catch (switchError: any) {
-        if (switchError.code === 4902) {
+        await provider.request({ method: "wallet_switchEthereumChain", params: [{ chainId: "0xa869" }] });
+      } catch (switchErr: any) {
+        if (switchErr.code === 4902) {
           await provider.request({
-            method: 'wallet_addEthereumChain',
-            params: [
-              {
-                chainId: '0xa869',
-                chainName: 'Avalanche Fuji Testnet',
-                nativeCurrency: { name: 'AVAX', symbol: 'AVAX', decimals: 18 },
-                rpcUrls: ['https://api.avax-test.network/ext/bc/C/rpc'],
-                blockExplorerUrls: ['https://testnet.snowtrace.io'],
-              },
-            ],
+            method: "wallet_addEthereumChain",
+            params: [{
+              chainId: "0xa869",
+              chainName: "Avalanche Fuji Testnet",
+              nativeCurrency: { name: "AVAX", symbol: "AVAX", decimals: 18 },
+              rpcUrls: ["https://api.avax-test.network/ext/bc/C/rpc"],
+              blockExplorerUrls: ["https://testnet.snowtrace.io"],
+            }],
           });
         }
       }
 
-      // ── Step 3: Request initial 402 challenge from server ──────────
-      setLoading("Requesting x402 Payment Challenge...");
-
-      const challengeRes = await fetch(`${API_BASE}/api/x402/generate-video`, {
+      // ── Step 3: Try free quota first (no payment needed) ──
+      setLoading("Checking free quota...");
+      const freeRes = await fetch(`${API_BASE}/api/x402/generate-video`, {
         method: "POST",
         headers: apiHeaders(),
         body: JSON.stringify({
-          prompt: compiledPrompt,
-          duration: 6,
-          imageUrl: character?.imageUrl,
-          characterId: character?.id,
+          prompt: compiledPrompt, duration: 6,
+          imageUrl: character?.imageUrl, characterId: character?.id,
         }),
       });
 
-      // If the server returns 200 (free quota used), we're done
-      if (challengeRes.ok) {
-        const data = await challengeRes.json();
-        alert(`Free quota used! Video Job ID: ${data.jobId}\n(Video generation is running in the background!)`);
+      if (freeRes.ok) {
+        const data = await freeRes.json();
+        alert(`Video generated (free quota)!\nJob ID: ${data.jobId}`);
         setStep(1);
         return;
       }
 
-      // Expect 402 Payment Required with x402 payment requirements
-      if (challengeRes.status !== 402) {
-        const errData = await challengeRes.json().catch(() => ({}));
-        throw new Error(errData.error || `Unexpected status: ${challengeRes.status}`);
-      }
+      // ── Step 4: Free quota exhausted — do direct USDC transfer via MetaMask ──
+      setLoading("Approving USDC Payment...");
 
-      // ── Step 4: Parse x402 payment requirements ────────────────────
-      // Ref: https://build.avax.network/academy/blockchain/x402-payment-infrastructure/03-technical-architecture/03-x-payment-header
-      const paymentRequiredHeader = challengeRes.headers.get("Payment-Required");
-      const challengeBody = await challengeRes.json();
-      const paymentOption = challengeBody.accepts?.[0];
+      const USDC_ADDRESS = "0x5425890298aed601595a70AB815c96711a31Bc65";
+      const TREASURY = "0xa8b17F22A7c71F6E12D741Ef4a342A793c74ce6c";
+      const AMOUNT = "0x3A980"; // 240000 in hex = $0.24 USDC (6 decimals)
 
-      if (!paymentOption) {
-        throw new Error("Server did not return payment requirements");
-      }
+      // ERC-20 transfer(address,uint256) — function selector 0xa9059cbb
+      const transferData = "0xa9059cbb"
+        + TREASURY.slice(2).padStart(64, "0")
+        + parseInt(AMOUNT, 16).toString(16).padStart(64, "0");
 
-      const usdcAddress = paymentOption.asset;
-      const amountWei = paymentOption.amount; // 6-decimal USDC units
-      const payTo = paymentOption.payTo;
-      const resourceUrl = challengeBody.resource?.url;
-
-      // ── Step 5: Sign ERC-3009 transferWithAuthorization ────────────
-      // EIP-3009 enables gasless USDC transfers — the facilitator submits the tx.
-      // Ref: https://build.avax.network/academy/blockchain/x402-payment-infrastructure/04-x402-on-avalanche/01-why-avalanche
-      setLoading("Signing ERC-3009 Authorization...");
-
-      const deadline = Math.floor(Date.now() / 1000) + 300; // 5 minutes
-      const nonce = `0x${Array.from(crypto.getRandomValues(new Uint8Array(32))).map(b => b.toString(16).padStart(2, '0')).join('')}`;
-
-      // EIP-712 typed data for ERC-3009 transferWithAuthorization
-      const domain = {
-        name: paymentOption.extra?.name || "USDC",
-        version: paymentOption.extra?.version || "2",
-        chainId: 43113,
-        verifyingContract: usdcAddress,
-      };
-
-      const types = {
-        TransferWithAuthorization: [
-          { name: "from", type: "address" },
-          { name: "to", type: "address" },
-          { name: "value", type: "uint256" },
-          { name: "validAfter", type: "uint256" },
-          { name: "validBefore", type: "uint256" },
-          { name: "nonce", type: "bytes32" },
-        ],
-      };
-
-      const value = {
-        from: address,
-        to: payTo,
-        value: amountWei,
-        validAfter: 0,
-        validBefore: deadline,
-        nonce,
-      };
-
-      // Request EIP-712 signature via MetaMask
-      const typedData = JSON.stringify({
-        types: {
-          EIP712Domain: [
-            { name: "name", type: "string" },
-            { name: "version", type: "string" },
-            { name: "chainId", type: "uint256" },
-            { name: "verifyingContract", type: "address" },
-          ],
-          ...types,
-        },
-        primaryType: "TransferWithAuthorization",
-        domain,
-        message: value,
+      const txHash = await provider.request({
+        method: "eth_sendTransaction",
+        params: [{
+          from: address,
+          to: USDC_ADDRESS,
+          data: transferData,
+          gas: "0x186A0", // 100k gas
+        }],
       });
 
-      const signature = await provider.request({
-        method: 'eth_signTypedData_v4',
-        params: [address, typedData],
-      });
+      setLoading("Payment confirmed. Generating video...");
 
-      // ── Step 6: Build x402 payment payload and retry ───────────────
-      // Ref: https://build.avax.network/academy/blockchain/x402-payment-infrastructure/03-technical-architecture/01-payment-flow
-      setLoading("Settling on Avalanche C-Chain...");
-
-      const paymentPayload = {
-        x402Version: 2,
-        scheme: "exact",
-        network: "eip155:43113",
-        payload: {
-          signature,
-          authorization: {
-            from: address,
-            to: payTo,
-            value: amountWei,
-            validAfter: "0",
-            validBefore: String(deadline),
-            nonce,
-          },
-        },
-        resource: { url: resourceUrl },
-        accepted: paymentOption,
-      };
-
-      const paymentHeader = btoa(JSON.stringify(paymentPayload));
-
+      // ── Step 5: Call generate-video with tx hash as payment proof ──
       const res = await fetch(`${API_BASE}/api/x402/generate-video`, {
         method: "POST",
-        headers: apiHeaders({ "Payment-Signature": paymentHeader }),
+        headers: apiHeaders({ "Payment-Signature": txHash }),
         body: JSON.stringify({
-          prompt: compiledPrompt,
-          duration: 6,
-          imageUrl: character?.imageUrl,
-          characterId: character?.id,
+          prompt: compiledPrompt, duration: 6,
+          imageUrl: character?.imageUrl, characterId: character?.id,
         }),
       });
 
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Generation failed");
 
-      alert(`Avalanche x402 settlement confirmed!\nPayer: ${address}\nNetwork: Avalanche Fuji (eip155:43113)\n\nVideo Job ID: ${data.jobId}\n(Video generation is running in the background!)`);
+      alert(`Payment confirmed on Avalanche Fuji!\nTx: ${txHash}\nVideo Job ID: ${data.jobId}\n\nhttps://testnet.snowtrace.io/tx/${txHash}`);
       setStep(1);
     } catch (err: any) {
       setError(err.message);
