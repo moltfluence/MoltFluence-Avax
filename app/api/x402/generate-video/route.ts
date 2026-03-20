@@ -64,9 +64,10 @@ export async function POST(req: Request): Promise<NextResponse> {
     const referenceImageUrl = payload.imageUrl ?? characterProfile?.imageUrl;
     const promptForGeneration = buildCharacterLockedPrompt(payload.prompt, characterProfile, referenceImageUrl);
 
+    // Lint is advisory — log but don't block generation
     const lint = lintVideoPrompt(promptForGeneration);
     if (!lint.passed) {
-      return NextResponse.json({ error: "Prompt failed lint checks", lint }, { status: 400 });
+      console.warn("[generate-video] Lint warnings:", lint.issues);
     }
 
     const costAtomic = getVideoCostAtomic(DEFAULT_MODEL, normalizedDuration);
