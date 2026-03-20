@@ -5,6 +5,12 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const API_BASE = "";
 
+// Helper to include session ID in every API call
+function apiHeaders(extra?: Record<string, string>): Record<string, string> {
+  const id = typeof window !== "undefined" ? getSessionId() : "ssr";
+  return { "Content-Type": "application/json", "x-user-id": id, ...extra };
+}
+
 type CharacterProfile = {
   id: string;
   name?: string;
@@ -36,10 +42,22 @@ type Script = {
   durationTargetSec?: number;
 };
 
+// Stable session ID — persists across requests, survives page refresh
+function getSessionId(): string {
+  if (typeof window === "undefined") return "ssr";
+  let id = sessionStorage.getItem("molt-session");
+  if (!id) {
+    id = `web-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    sessionStorage.setItem("molt-session", id);
+  }
+  return id;
+}
+
 export default function PipelinePage() {
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const sessionId = typeof window !== "undefined" ? getSessionId() : "ssr";
 
   // Form States
   const [charName, setCharName] = useState("");
@@ -63,7 +81,7 @@ export default function PipelinePage() {
     try {
       const res = await fetch(`${API_BASE}/api/state/character`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: apiHeaders(),
         body: JSON.stringify({
           characterType: `${charName}. ${charBio}`.slice(0, 80),
           niche,
@@ -82,7 +100,7 @@ export default function PipelinePage() {
       setLoading("Visualizing Persona...");
       const imgRes = await fetch(`${API_BASE}/api/x402/generate-image`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: apiHeaders(),
         body: JSON.stringify({ prompt: profile.imagePrompt, characterId: profile.id }),
       });
       const imgData = await imgRes.json();
@@ -128,7 +146,7 @@ export default function PipelinePage() {
     try {
       const res = await fetch(`${API_BASE}/api/swarm/trends`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: apiHeaders(),
         body: JSON.stringify({ niche: character?.niche }),
       });
       const data = await res.json();
@@ -151,7 +169,7 @@ export default function PipelinePage() {
     try {
       const res = await fetch(`${API_BASE}/api/swarm/scripts`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: apiHeaders(),
         body: JSON.stringify({ characterProfile: character, topic: title, mode: "manual-topic" }),
       });
       const data = await res.json();
@@ -170,7 +188,7 @@ export default function PipelinePage() {
     try {
       const res = await fetch(`${API_BASE}/api/swarm/prompt-compile`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: apiHeaders(),
         body: JSON.stringify({
           profile: character,
           brief: {
@@ -241,7 +259,7 @@ export default function PipelinePage() {
 
       const challengeRes = await fetch(`${API_BASE}/api/x402/generate-video`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: apiHeaders(),
         body: JSON.stringify({
           prompt: compiledPrompt,
           duration: 6,
@@ -363,10 +381,7 @@ export default function PipelinePage() {
 
       const res = await fetch(`${API_BASE}/api/x402/generate-video`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Payment-Signature": paymentHeader,
-        },
+        headers: apiHeaders({ "Payment-Signature": paymentHeader }),
         body: JSON.stringify({
           prompt: compiledPrompt,
           duration: 6,
